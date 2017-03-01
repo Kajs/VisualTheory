@@ -1,9 +1,10 @@
 % Clear the workspace and the screen
+
 close all;
 clearvars;
 sca;
 
-exptrials = 1;           %number of trials per exposure duration
+exptrials = 5;           %number of trials per exposure duration
 primedur = 1.0;          %time to show the priming symbol
 primetotrialdelay = 2.0; %delay between prime symbol dissapearance and trial
 primechar = '*';
@@ -13,7 +14,7 @@ stimulussize = 70;       %text size for the stimulus letters
 
 stopprogram = 0;
 enterkey = 10;
-escapekey = 27;
+escapekey = KbName('ESCAPE');
 data_responses = 1;
 data_duration = 2;
 data_time = 3;
@@ -49,11 +50,7 @@ leftToRight = right - left;
 
 data_distinct_single_red = zeros(3, size(expdurations, 2), exptrials);
 
-Screen('TextSize', window, 100);
-DrawFormattedText(window, 'Distinct - single (red)', 'center', 'center', white);
-Screen('TextSize', window, 90);
-DrawFormattedText(window, 'Press ENTER to continue', 'center', yCenter*1.4, white);
-vbl = Screen('Flip', window);
+vbl = showTrialInformation('Distinct - single (red)', window, yCenter*1.4, white);
 
 ListenChar(-1);
 ch = 0;
@@ -65,6 +62,7 @@ end
 KbQueueCreate();
 
 %distinct SINGLE red **********************************
+letterSequence = generateLetterSequence(letters, size(expdurations, 2), exptrials);
 for e = 1:size(expdurations, 2)
     if(stopprogram)
         break;
@@ -79,7 +77,7 @@ for e = 1:size(expdurations, 2)
         vbl = Screen('Flip', window);
         vbl = Screen('Flip', window, vbl + primedur);
     
-        letter = letters(randi(numletters));
+        letter = letterSequence(e, t);
         screenpos = left + (randi(2) - 1) * leftToRight;
         Screen('TextSize', window, stimulussize);
         DrawFormattedText(window, letter, screenpos, 'center', red);
@@ -122,6 +120,7 @@ for e = 1:size(expdurations, 2)
 end
 ListenChar(0);
 sca;
+
 %{
 
 %distinct SINGLE green **********************************
@@ -337,3 +336,24 @@ KbStrokeWait;
 % Clear the screen
 sca;
  %}
+
+
+function letterSequence = generateLetterSequence(letters, expdurations, exptrials)
+letterSequence = zeros(expdurations, exptrials);
+for i = 1:expdurations
+    for j = 1:exptrials
+        letterSequence(i, j) = letters(mod(j, size(letters, 2)) + 1);
+    end
+    letterSequence(i, :) = letterSequence(i, randperm(exptrials));
+end
+return
+end
+
+function vbl = showTrialInformation(message, window, position, color)
+Screen('TextSize', window, 100);
+DrawFormattedText(window, message, 'center', 'center', color);
+Screen('TextSize', window, 90);
+DrawFormattedText(window, 'Press ENTER to continue', 'center', position, color);
+vbl = Screen('Flip', window);
+return
+end
