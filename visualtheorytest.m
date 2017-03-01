@@ -11,11 +11,19 @@ mask = '-|^<\*';
 maskdur = 2.0;           %duration the mask is shown
 stimulussize = 70;       %text size for the stimulus letters
 
+stopprogram = 0;
+enterkey = 10;
+escapekey = 27;
+data_responses = 1;
+data_duration = 2;
+data_time = 3;
+
+
 letters = ['A' 'E' 'I' 'O' 'U'];
 numletters = size(letters, 2);
 expdurations = [0.5 0.15];
-typeRedLetter = 'Please press symbol of the red letter';
-typeGreenLetter = 'Please press the symbol of the green letter';
+typeRedLetter = 'Please press symbol of the RED letter';
+typeGreenLetter = 'Please press the symbol of the GREEN letter';
 
 PsychDefaultSetup(2);
 
@@ -39,17 +47,33 @@ right = xCenter * (1.0 + letterspacing);
 startingpositions = [left right];
 leftToRight = right - left;
 
+data_distinct_single_red = zeros(3, size(expdurations, 2), exptrials);
+
 Screen('TextSize', window, 100);
 DrawFormattedText(window, 'Distinct - single (red)', 'center', 'center', white);
 Screen('TextSize', window, 90);
-DrawFormattedText(window, 'Press a key to continue', 'center', yCenter*1.4, white);
+DrawFormattedText(window, 'Press ENTER to continue', 'center', yCenter*1.4, white);
 vbl = Screen('Flip', window);
-KbStrokeWait;
 
+ListenChar(-1);
+ch = 0;
+while ch ~= enterkey
+    FlushEvents();
+    [ch, when] = GetChar();
+end
+
+KbQueueCreate();
 
 %distinct SINGLE red **********************************
 for e = 1:size(expdurations, 2)
+    if(stopprogram)
+        break;
+    end
     for t = 1:exptrials
+        if(stopprogram)
+            break;
+        end
+        
         Screen('TextSize', window, 200);
         DrawFormattedText(window, primechar, 'center', 'center', white);
         vbl = Screen('Flip', window);
@@ -59,21 +83,44 @@ for e = 1:size(expdurations, 2)
         screenpos = left + (randi(2) - 1) * leftToRight;
         Screen('TextSize', window, stimulussize);
         DrawFormattedText(window, letter, screenpos, 'center', red);
-
-        vbl = Screen('Flip', window, vbl + primetotrialdelay);
+        
+        time_check = 0;
+        pressed = 0;
+        expduration = expdurations(e);
+        
+        vbl = Screen('Flip', window, vbl + primetotrialdelay); %SHOW STIMULUS
+        time_start = GetSecs();
+        KbQueueStart();
+        
         Screen('TextSize', window, stimulussize);
         DrawFormattedText(window, mask, screenpos, 'center', white);
-        vbl = Screen('Flip', window, vbl + expdurations(e));
-        vbl = Screen('Flip', window, vbl + maskdur);
         
-        Screen('TextSize', window, 50);
-        DrawFormattedText(window, typeRedLetter, 'center', 'center', white);
+        vbl = Screen('Flip', window, vbl + expduration); %#ok<NASGU> %SHOW MASK       
+        
+        while(time_check - time_start < maskdur + expduration & ~pressed)
+            [ pressed, firstPress]=KbQueueCheck();
+            time_check = GetSecs();
+        end
         vbl = Screen('Flip', window);
-        [ch, when] = GetChar();
-        KbStrokeWait;
-        disp(ch);
+
+        if ~pressed
+            Screen('TextSize', window, 50);
+            DrawFormattedText(window, typeRedLetter, 'center', 'center', white);
+            vbl = Screen('Flip', window);
+        end
+        
+        while(~pressed)
+            [ pressed, firstPress]=KbQueueCheck();
+        end
+        KbQueueStop();
+        responsetime = firstPress(find(firstPress)) - time_start;
+
+        if(min(find(firstPress)) == escapekey)
+            stopprogram = 1;
+        end
     end
 end
+ListenChar(0);
 sca;
 %{
 
