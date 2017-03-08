@@ -19,7 +19,7 @@ disp(screenCmY);
 letterDisplacement = 5.0; %cm
 
 
-expTrials = 5;           %number of trials per exposure duration
+expTrials = 20;           %number of trials per exposure duration
 primeDur = 1.0;          %time to show the priming symbol
 primeToTrialDelay = 2.0; %delay between prime symbol dissapearance and trial
 primeChar = '+';
@@ -39,7 +39,8 @@ stopProgram = 0;
 
 letters = ['A' 'E' 'I' 'O' 'U'];
 numLetters = size(letters, 2);
-expDurations = [0.5 0.15];
+expDurations = [0.1 0.125 0.15 0.175 0.2];
+expDurations = expDurations(randperm(size(expDurations, 2)));
 typeRedLetter = 'Please press symbol of the RED letter';
 typeGreenLetter = 'Please press the symbol of the GREEN letter';
 
@@ -78,8 +79,7 @@ KbQueueCreate();
 
 
 vbl = showTrialInformation('Distinct - partial (RED)', window, yCenter*1.4, white, enterKey);
-letterSequenceRed = generateLetterSequence(letters, size(expDurations, 2), expTrials);
-letterSequenceGreen = generateLetterSequence(letters, size(expDurations, 2), expTrials);
+letterSequence = generateLetterSequence(letters, size(expDurations, 2));
 for e = 1:size(expDurations, 2)
     if(stopProgram); break; end
     for t = 1:expTrials
@@ -91,8 +91,8 @@ for e = 1:size(expDurations, 2)
         positions = startingPositions(randperm(2));
   
         Screen('TextSize', window, stimulusSize);
-        DrawFormattedText(window, letterSequenceRed(e, t), positions(1), 'center', red);
-        DrawFormattedText(window, letterSequenceGreen(e, t), positions(2), 'center', green);   
+        DrawFormattedText(window, letters(letterSequence(e, t, 1)), positions(1), 'center', red);
+        DrawFormattedText(window, letters(letterSequence(e, t, 2)), positions(2), 'center', green);   
 
         vbl = Screen('Flip', window, vbl + primeToTrialDelay); %SHOW STIMULUS
         time_start = GetSecs();
@@ -115,13 +115,22 @@ end
 ListenChar(0);
 sca;
 
-function letterSequence = generateLetterSequence(letters, expdurations, exptrials)
-letterSequence = zeros(expdurations, exptrials);
+function letterSequence = generateLetterSequence(letters, expdurations)
+numLetters = size(letters, 2);
+letterSequence = zeros(expdurations, numLetters*(numLetters-1), 2);
 for i = 1:expdurations
-    for j = 1:exptrials
-        letterSequence(i, j) = letters(mod(j, size(letters, 2)) + 1);
+    for a = 1:numLetters
+        count = 1;
+        for b = 1:numLetters - 1      
+            letterSequence(i, b + (a-1)*(numLetters-1), 1) = a;
+            if count == a; count = count + 1; end
+            letterSequence(i, b + (a-1)*(numLetters-1), 2) = count;
+            count = count + 1;
+        end
     end
-    letterSequence(i, :) = letterSequence(i, randperm(exptrials));
+    perm = randperm(numLetters*(numLetters-1));
+    letterSequence(i, :, 1) = letterSequence(i, perm, 1);
+    letterSequence(i, :, 2) = letterSequence(i, perm, 2);
 end
 return
 end
