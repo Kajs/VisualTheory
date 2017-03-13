@@ -3,10 +3,11 @@
 close all;
 clearvars;
 sca;
+KbName('UnifyKeyNames');
 
-screenDiag = 31.75; %cm
-screenPixelsX = 1366.0;
-screenPixelsY = 768.0;
+screenDiag = 31.75 * 1.25; %cm
+screenPixelsX = 1280.0;
+screenPixelsY = 1024.0;
 screenPixelsDiag = sqrt(screenPixelsX.^2 + screenPixelsY.^2);
 cmPerPixel = screenDiag/screenPixelsDiag;
 
@@ -16,14 +17,14 @@ screenCmX = screenPixelsX * cmPerPixel;
 screenCmY = screenPixelsY * cmPerPixel;
 disp(screenCmX);
 disp(screenCmY);
-letterDisplacement = 5.0; %cm
+letterDisplacement = 10.0; %cm
 
 
 expTrials = 20;           %number of trials per exposure duration
 primeDur = 1.0;          %time to show the priming symbol
 primeToTrialDelay = 2.0; %delay between prime symbol dissapearance and trial
 primeChar = '+';
-mask = '-|^<\*';
+%mask = '-|^<\*';
 maskDur = 2.0;           %duration the mask is shown
 stimulusSize = 70;       %text size for the stimulus letters
 stimulusPositionCorrection = 0.47 / cmPerPixel;
@@ -32,12 +33,12 @@ data_responses = 1;
 data_duration = 2;
 data_time = 3;
 
-enterKey = 10;
 escapeKey = KbName('ESCAPE');
 stopProgram = 0;
 
 
 letters = ['A' 'E' 'I' 'O' 'U'];
+acceptedKeys = [KbName('a') KbName('e') KbName('i') KbName('o') KbName('u') KbName('ESCAPE')];
 numLetters = size(letters, 2);
 expDurations = [0.1 0.125 0.15 0.175 0.2];
 expDurations = expDurations(randperm(size(expDurations, 2)));
@@ -78,8 +79,10 @@ letterBoxY = 53;
 ListenChar(-1);
 KbQueueCreate();
 
+KbQueueStart();
+vbl = showTrialInformation('Distinct - partial RED', window, yCenter*1.4, white);
+KbQueueStop();
 
-vbl = showTrialInformation('Distinct - partial (RED)', window, yCenter*1.4, white, enterKey);
 letterSequence = generateLetterSequence(letters, size(expDurations, 2));
 for e = 1:size(expDurations, 2)
     if(stopProgram); break; end
@@ -103,17 +106,17 @@ for e = 1:size(expDurations, 2)
         Screen('DrawTextures', window, textureIndex, [], dstRects, [], [], [], []);
         dstRects = [right - letterBoxX*1.5, yCenter - letterBoxY*1.5, right + letterBoxX*1.5, yCenter + letterBoxY*1.5];
         Screen('DrawTextures', window, textureIndex, [], dstRects, [], [], [], []);
-        vbl = Screen('Flip', window, vbl + expDurations(e)); %SHOW MASK
+        vbl = Screen('Flip', window, vbl + expDurations(e)); %SHOW MASK        
         
-        
-        firstPress = getResponseOneAnswer(time_start, window, maskDur + expduration, 150, red);      
+        [key, time] = getResponseOneAnswer(time_start, window, maskDur + expduration, 150, red, acceptedKeys);      
         KbQueueStop();
-        responsetime = firstPress(find(firstPress)) - time_start;
-        if(min(find(firstPress)) == escapeKey); stopProgram = 1; end
+        responsetime = time - time_start;
+        if(key == KbName(escapeKey)); stopProgram = 1; end
     end
 end
 
 ListenChar(0);
+KbQueueRelease;
 sca;
 
 function letterSequence = generateLetterSequence(letters, expdurations)
@@ -136,46 +139,64 @@ end
 return
 end
 
-function vbl = showTrialInformation(message, window, position, color, endkey)
+function vbl = showTrialInformation(message, window, position, color)
 Screen('TextSize', window, 100);
 DrawFormattedText(window, message, 'center', 'center', color);
 Screen('TextSize', window, 90);
 DrawFormattedText(window, 'Press ENTER to continue', 'center', position, color);
 vbl = Screen('Flip', window);
 
-ch = 0;
-while ch ~= endkey
-    FlushEvents();
-    [ch, when] = GetChar();
-end
+getKeys([KbName('return')], 0);
 return
 end
 
-function firstPress = getResponseOneAnswer(time_start, window, waitduration, messageSize, messageColor)
-time_check = 0;
-pressed = 0;
-while(time_check - time_start < waitduration & ~pressed)
-    [ pressed, firstPress]=KbQueueCheck();
-    time_check = GetSecs();
-end
+function [key, time] = getResponseOneAnswer(time_start, window, waitduration, messageSize, messageColor, acceptedKeys)
+[key, time] = getKeys(acceptedKeys, waitduration);
+if time > 0; return; end
+
+vbl = Screen('Flip', window);
+Screen('TextSize', window, messageSize);
+DrawFormattedText(window, '?', 'center', 'center', messageColor);
 vbl = Screen('Flip', window);
 
-if ~pressed
-    Screen('TextSize', window, messageSize);
-    DrawFormattedText(window, '?', 'center', 'center', messageColor);
-    vbl = Screen('Flip', window);
-end
-        
-while(~pressed)
-    [ pressed, firstPress]=KbQueueCheck();
-end
-return
+[key, time] = getKeys(acceptedKeys, 0);
+return;
 end
 
 function vbl = showPrimeChar(window, primechar, duration, charColor)
-Screen('TextSize', window, 200);
+Screen('TextSize', window, 100);
 DrawFormattedText(window, primechar, 'center', 'center', charColor);
 vbl = Screen('Flip', window);
 vbl = Screen('Flip', window, vbl + duration);
+return
+end
+
+function [key, time] = getKeys(acceptedKeys, maxWait)
+timeStart = GetSecs();
+pressed = 0;
+keyAccepted = 0;
+key = 0;
+time = 0;
+
+while (~pressed)
+    [pressed, firstPress]=KbQueueCheck;
+    if pressed
+        pressedCodes=find(firstPress);
+        for i=1:size(pressedCodes,2)
+            for acceptedKey = acceptedKeys
+                if pressedCodes(i) == acceptedKey
+                    key = KbName(pressedCodes(i));
+                    time = firstPress(pressedCodes(i));
+                    keyAccepted = 1;
+                    break;
+                end
+            end
+        end
+    end
+    if ~keyAccepted; pressed = 0; end
+    if maxWait > 0 & GetSecs() - timeStart >= maxWait;
+        break;
+    end
+end
 return
 end
