@@ -83,6 +83,8 @@ KbQueueStart();
 vbl = showTrialInformation('Distinct - partial RED', window, yCenter*1.4, white);
 KbQueueStop();
 
+runTrials(window, letters, expDurations, startingPositions, yCenter);
+%{
 letterSequence = generateLetterSequence(letters, size(expDurations, 2));
 for e = 1:size(expDurations, 2)
     if(stopProgram); break; end
@@ -114,6 +116,7 @@ for e = 1:size(expDurations, 2)
         if(key == KbName(escapeKey)); stopProgram = 1; end
     end
 end
+%}
 
 ListenChar(0);
 KbQueueRelease;
@@ -164,7 +167,7 @@ return;
 end
 
 function vbl = showPrimeChar(window, primechar, duration, charColor)
-Screen('TextSize', window, 100);
+Screen('TextSize', window, 50);
 DrawFormattedText(window, primechar, 'center', 'center', charColor);
 vbl = Screen('Flip', window);
 vbl = Screen('Flip', window, vbl + duration);
@@ -198,5 +201,65 @@ while (~pressed)
         break;
     end
 end
+return
+end
+
+function results = runTrials(window, letters, expDurations, startingPositions, yCenter)
+letterSequence = generateLetterSequence(letters, size(expDurations, 2));
+stopProgram = 0;
+maskSymbols = ['-' '|' '^' '<' '\' '*' '~' '&' '=' '{' '[' ']' '}'];
+maskColors = cellstr(['green'; 'red  ']);
+maskFontSize = 70;
+letterBoxX = 46;
+letterBoxY = 53;
+
+fade = 0.5
+red = [1.0*fade 0 0];
+green = [0 1.0*fade 0];
+primeDur = 1.0;          %time to show the priming symbol
+primeToTrialDelay = 2.0; %delay between prime symbol dissapearance and trial
+primeChar = '+';
+white = [1 1 1];
+left = startingPositions(1);
+right = startingPositions(2);
+
+stimulusSize = 70;
+maskDur = 2.0; 
+expTrials = 20;
+
+letters = ['A' 'E' 'I' 'O' 'U'];
+acceptedKeys = [KbName('a') KbName('e') KbName('i') KbName('o') KbName('u') KbName('ESCAPE')];
+
+for e = 1:size(expDurations, 2)
+    if(stopProgram); break; end
+    for t = 1:expTrials
+        if(stopProgram); break; end
+        maskImg = generateMask(maskSymbols, maskColors, maskFontSize, letterBoxX, letterBoxY, fade);
+        textureIndex=Screen('MakeTexture', window, maskImg);
+        expduration = expDurations(e);   
+        vbl = showPrimeChar(window, primeChar, primeDur, white);
+        positions = startingPositions(randperm(2));
+  
+        Screen('TextSize', window, stimulusSize);
+        DrawFormattedText(window, letters(letterSequence(e, t, 1)), positions(1), 'center', red);
+        DrawFormattedText(window, letters(letterSequence(e, t, 2)), positions(2), 'center', green);   
+
+        vbl = Screen('Flip', window, vbl + primeToTrialDelay); %SHOW STIMULUS
+        time_start = GetSecs();
+        KbQueueStart();
+        
+        dstRects = [left - letterBoxX*1.5, yCenter - letterBoxY*1.5, left + letterBoxX*1.5, yCenter + letterBoxY*1.5];
+        Screen('DrawTextures', window, textureIndex, [], dstRects, [], [], [], []);
+        dstRects = [right - letterBoxX*1.5, yCenter - letterBoxY*1.5, right + letterBoxX*1.5, yCenter + letterBoxY*1.5];
+        Screen('DrawTextures', window, textureIndex, [], dstRects, [], [], [], []);
+        vbl = Screen('Flip', window, vbl + expDurations(e)); %SHOW MASK        
+        
+        [key, time] = getResponseOneAnswer(time_start, window, maskDur + expduration, 150, red, acceptedKeys);      
+        KbQueueStop();
+        responsetime = time - time_start;
+        if(key == KbName(KbName('ESCAPE'))); stopProgram = 1; end
+    end
+end
+results = 0;
 return
 end
