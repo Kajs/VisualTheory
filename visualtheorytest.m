@@ -52,8 +52,9 @@ screenNumber = max(screens);
 % Define black, white and grey
 black = BlackIndex(screenNumber);
 white = WhiteIndex(screenNumber);
-red = [1 0 0];
-green = [0 1 0];
+fade = 0.5;
+red = [1.0*fade 0 0];
+green = [0 1.0*fade 0];
 grey = white / 2;
 
 [window, windowRect] = PsychImaging('OpenWindow', screenNumber, grey);
@@ -84,7 +85,7 @@ for e = 1:size(expDurations, 2)
     if(stopProgram); break; end
     for t = 1:expTrials
         if(stopProgram); break; end
-        maskImg = generateMask(maskSymbols, maskColors, maskFontSize, letterBoxX, letterBoxY);
+        maskImg = generateMask(maskSymbols, maskColors, maskFontSize, letterBoxX, letterBoxY, fade);
         textureIndex=Screen('MakeTexture', window, maskImg);
         expduration = expDurations(e);   
         vbl = showPrimeChar(window, primeChar, primeDur, white);
