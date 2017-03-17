@@ -21,7 +21,6 @@ expTrials = 20;           %number of trials per exposure duration
 primeDur = 1.0;          %time to show the priming symbol
 %primeToTrialDelay = 2.0; %delay between prime symbol dissapearance and trial
 primeChar = '+';
-%mask = '-|^<\*';
 maskDur = 2.0;           %duration the mask is shown
 stimulusSize = 70;       %text size for the stimulus letters
 stimulusPositionCorrection = 0.47 / cmPerPixel;
@@ -51,7 +50,7 @@ screenNumber = max(screens);
 black = BlackIndex(screenNumber);
 white = [1 1 1];
 fade_text = 0.87;
-fade_stimulus = 0.1625;
+fade_stimulus = 0.48;
 red = [1.0 0 0];
 green = [0 1.0 0];
 grey = white / 2;
@@ -78,12 +77,12 @@ testNumber = '002';
 
 %function results = runTrials(window, letters, acceptedKeys, expDurations, startingPositions, yCenter, fade_stimulus, fade_text, stimulusSize, maskSymbols, maskFontSize, stimulusColors, answerBoth, results, questions)
 
-
+%{
 %Distinct SINGLE Green
 showTrialInformation('Distinct - single GREEN', window, yCenter*1.4, white*fade_text);
 results_distinct_single_green = runTrials(window, letters, acceptedKeys, expDurations, startingPositions, yCenter, fade_text, fade_text, stimulusSize, maskSymbols, maskFontSize, [green], 0, zeros(size(expDurations, 2), expTrials, 4), {'GREEN letter?'});
 save(strcat('data/', testNumber, '_results_distinct_single_green'), 'results_distinct_single_green');
-
+%}
 
 %{
 %Distinct WHOLE Red-Green
@@ -99,16 +98,32 @@ results_indistinct_single_green = runTrials(window, letters, acceptedKeys, expDu
 save(strcat('data/', testNumber, '_results_indistinct_single_green'), 'results_indistinct_single_green');
 %}
 
-%{
+
 %Indistinct WHOLE Red-Green
 showTrialInformation('Indistinct - whole RED-GREEN', window, yCenter*1.4, white*fade_text);
-results_indistinct_whole_red_green = runTrials(window, letters, acceptedKeys, expDurations, startingPositions, yCenter, fade_stimulus, fade_text, stimulusSize, maskSymbols, maskFontSize, [red; green], 1, zeros(size(expDurations, 2), expTrials, 7), {'RED letter?', 'GREEN letter?'});
+results_indistinct_whole_red_green = runTrials(window, letters, acceptedKeys, expDurations, startingPositions, yCenter, fade_stimulus, fade_text, stimulusSize, maskSymbols, maskFontSize, mixRedGreen([red; green], fade_stimulus), 1, zeros(size(expDurations, 2), expTrials, 7), {'RED letter?', 'GREEN letter?'});
 save(strcat('data/', testNumber, '_results_indistinct_whole_red_green'), 'results_indistinct_whole_red_green');
-%}
+
 
 KbQueueRelease;
 %ListenChar(0);
 sca;
+
+function mixedRedGreen = mixRedGreen(colors, fade)
+r1 = colors(1, 1);
+g1 = colors(1, 2);
+b1 = colors(1, 3);
+r2 = colors(2, 1);
+g2 = colors(2, 2);
+b2 = colors(2, 3);
+
+if(r1 > g1) %first color is red
+    mixedRedGreen = [[r1-fade g1+fade b1]; [r2+fade g2-fade b2]];
+else %first color is green
+    mixedRedGreen = [[r1+fade g1-fade b1]; [r2-fade g2+fade b2]];
+end
+return
+end
 
 function letterSequence = generateLetterSequence(letters, expdurations)
 numLetters = size(letters, 2);
@@ -224,16 +239,13 @@ for e = 1:size(expDurations, 2)
         positions = startingPositions(randperm(2));
   
         Screen('TextSize', window, stimulusSize);
-        DrawFormattedText(window, letters(letterSequence(e, t, 1)), positions(1), 'center', stimulusColors(1, :)*fade_stimulus);
+        DrawFormattedText(window, letters(letterSequence(e, t, 1)), positions(1), 'center', stimulusColors(1, :));
         if(size(stimulusColors, 1)) == 2
-            DrawFormattedText(window, letters(letterSequence(e, t, 2)), positions(2), 'center', stimulusColors(2, :)*fade_stimulus);
+            DrawFormattedText(window, letters(letterSequence(e, t, 2)), positions(2), 'center', stimulusColors(2, :));
         end
 
-        %Screen('TextSize', window, 50);
-        KbQueueStart();
         time_start = Screen('Flip', window, vbl + primeToTrialDelay); %SHOW STIMULUS  
-        %DrawFormattedText(window, focusChar, 'center', 'center', fade_text);
-        %vbl = Screen('Flip', window, time_start + expduration); %REMOVE STIMULUS
+        KbQueueStart();
         
         drawFocusChar(window, focusChar, fade_text);
         Screen('DrawTextures', window, textureIndex, [], dstRects1, [], [], [], []);
