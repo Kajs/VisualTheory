@@ -4,6 +4,7 @@ close all;
 clearvars;
 sca;
 KbName('UnifyKeyNames');
+expDurations = [0.1];
 
 screenDiag = 31.75 * 1.25; %cm
 screenPixelsX = 1280.0;
@@ -36,7 +37,7 @@ stopProgram = 0;
 letters = ['A' 'E' 'I' 'O' 'U'];
 acceptedKeys = [KbName('a') KbName('e') KbName('i') KbName('o') KbName('u') KbName('ESCAPE')];
 numLetters = size(letters, 2);
-expDurations = [0.1 0.125 0.15 0.175 0.2];
+
 expDurations = expDurations(randperm(size(expDurations, 2)));
 typeRedLetter = 'Please press symbol of the RED letter';
 typeGreenLetter = 'Please press the symbol of the GREEN letter';
@@ -77,55 +78,37 @@ testNumber = '002';
 
 %function results = runTrials(window, letters, acceptedKeys, expDurations, startingPositions, yCenter, fade_stimulus, fade_text, stimulusSize, maskSymbols, maskFontSize, stimulusColors, answerBoth, results, questions)
 
-%{
+
 %Distinct SINGLE Green
 showTrialInformation('Distinct - single GREEN', window, yCenter*1.4, white*fade_text);
 results_distinct_single_green = runTrials(window, letters, acceptedKeys, expDurations, startingPositions, yCenter, fade_text, fade_text, stimulusSize, maskSymbols, maskFontSize, [green], 0, zeros(size(expDurations, 2), expTrials, 4), {'GREEN letter?'});
 save(strcat('data/', testNumber, '_results_distinct_single_green'), 'results_distinct_single_green');
 
+
+%{
 %Distinct WHOLE Red-Green
 showTrialInformation('Distinct - whole RED-GREEN', window, yCenter*1.4, white*fade_text);
 results_distinct_whole_red_green = runTrials(window, letters, acceptedKeys, expDurations, startingPositions, yCenter, fade_text, fade_text, stimulusSize, maskSymbols, maskFontSize, [red; green], 1, zeros(size(expDurations, 2), expTrials, 7), {'RED letter?', 'GREEN letter?'});
 save(strcat('data/', testNumber, '_results_distinct_whole_red_green'), 'results_distinct_whole_red_green');
+%}
 
+%{
 %Indistinct SINGLE Green
 showTrialInformation('Indistinct - single GREEN', window, yCenter*1.4, white*fade_text);
 results_indistinct_single_green = runTrials(window, letters, acceptedKeys, expDurations, startingPositions, yCenter, fade_stimulus, fade_text, stimulusSize, maskSymbols, maskFontSize, [green], 0, zeros(size(expDurations, 2), expTrials, 4), {'GREEN letter?'});
 save(strcat('data/', testNumber, '_results_indistinct_single_green'), 'results_indistinct_single_green');
 %}
 
+%{
 %Indistinct WHOLE Red-Green
 showTrialInformation('Indistinct - whole RED-GREEN', window, yCenter*1.4, white*fade_text);
 results_indistinct_whole_red_green = runTrials(window, letters, acceptedKeys, expDurations, startingPositions, yCenter, fade_stimulus, fade_text, stimulusSize, maskSymbols, maskFontSize, [red; green], 1, zeros(size(expDurations, 2), expTrials, 7), {'RED letter?', 'GREEN letter?'});
 save(strcat('data/', testNumber, '_results_indistinct_whole_red_green'), 'results_indistinct_whole_red_green');
-
-%dispResults(results_indistinct_whole_red_green(:, :, 2), results_indistinct_whole_red_green(:, :, 3), results_indistinct_whole_red_green(:, :, 1), expDurations);
+%}
 
 KbQueueRelease;
-ListenChar(0);
+%ListenChar(0);
 sca;
-
-function dispResults(stimulus, answer, expDurations, keys_in)
-val = zeros(1, size(keys_in, 2));
-m = containers.Map(keys_in, val);
-for e = 1:size(expDurations, 1)
-    for t = 1:size(expDurations, 2)
-        if expDurations(e, t) > 0
-            m(expDurations(e, t)) = m(expDurations(e, t)) + (stimulus(e, t) == answer(e, t));
-        end
-    end
-end
-for k = keys_in
-    m(k) = m(k) / size(expDurations, 2);
-end
-X = zeros(1, size(keys_in, 2));
-Y = zeros(1, size(keys_in, 2));
-for i = 1:size(keys_in, 2)
-    X(i) = keys_in(i);
-    Y(i) = m(keys_in(i));
-end
-scatter(X, Y);
-end
 
 function letterSequence = generateLetterSequence(letters, expdurations)
 numLetters = size(letters, 2);
@@ -232,7 +215,8 @@ for e = 1:size(expDurations, 2)
         dstRects1 = [left - letterBoxX*1.5, yCenter - letterBoxY*1.5, left + letterBoxX*1.5, yCenter + letterBoxY*1.5];
         dstRects2 = [right - letterBoxX*1.5, yCenter - letterBoxY*1.5, right + letterBoxX*1.5, yCenter + letterBoxY*1.5];
         
-        textureIndex=Screen('MakeTexture', window, maskImg);
+        textureIndex=Screen('MakeTexture', window, maskImg);      
+        
         expduration = expDurations(e); 
         drawFocusChar(window, focusChar, fade_text);
         vbl = Screen('Flip', window);
@@ -252,19 +236,19 @@ for e = 1:size(expDurations, 2)
         %vbl = Screen('Flip', window, time_start + expduration); %REMOVE STIMULUS
         
         drawFocusChar(window, focusChar, fade_text);
-  ie      Screen('DrawTextures', window, textureIndex, [], dstRects1, [], [], [], []);
+        Screen('DrawTextures', window, textureIndex, [], dstRects1, [], [], [], []);
         Screen('DrawTextures', window, textureIndex, [], dstRects2, [], [], [], []);
         vbl = Screen('Flip', window, time_start + expduration); %SHOW MASK
         
         [key1, time1] = getResponseOneAnswer(window, maskDur, 100, fade_text, acceptedKeys, questions{1});
+        if(key1 == KbName(KbName('ESCAPE'))); stopProgram = 1; break; end
         if answerBoth
             KbQueueStop();
             KbQueueStart();
             [key2, time2] = getResponseOneAnswer(window, maskDur - (time1 - time_start), 100, fade_text, acceptedKeys, questions{2});
+            if(key2 == KbName(KbName('ESCAPE'))); stopProgram = 1; break; end
         end
         KbQueueStop();
-        
-        if(key1 == KbName(KbName('ESCAPE'))); stopProgram = 1; break; end
         
         results(e, t, 1) = expDurations(e); %exposure duration
         results(e, t, 2) = lower(letters(letterSequence(e, t, 1))); %stimulus 1
