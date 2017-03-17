@@ -4,7 +4,8 @@ close all;
 clearvars;
 sca;
 KbName('UnifyKeyNames');
-expDurations = [0.1];
+expDurations = [1.0];
+fade_stimulus = 0.25;
 
 screenDiag = 31.75 * 1.25; %cm
 screenPixelsX = 1280.0;
@@ -49,8 +50,7 @@ screenNumber = max(screens);
 % Define COLORS
 black = BlackIndex(screenNumber);
 white = [1 1 1];
-fade_text = 0.87;
-fade_stimulus = 0.48;
+fade_text = 0.85;
 red = [1.0 0 0];
 green = [0 1.0 0];
 grey = white / 2;
@@ -75,52 +75,129 @@ ListenChar(-1);
 KbQueueCreate();
 testNumber = '002';
 
+run_distinct_single_red = 1;
+run_distinct_single_green = 0;
+run_distinct_partial_red = 0;
+run_distinct_partial_green = 0;
+run_distinct_whole_red_green = 0;
+run_distinct_whole_green_red = 0;
+
+run_indistinct_single_red = 0;
+run_indistinct_single_green = 0;
+run_indistinct_partial_red = 0;
+run_indistinct_partial_green = 0;
+run_indistinct_whole_red_green = 0;
+run_indistinct_whole_green_red = 0;
+
 %function results = runTrials(window, letters, acceptedKeys, expDurations, startingPositions, yCenter, fade_stimulus, fade_text, stimulusSize, maskSymbols, maskFontSize, stimulusColors, answerBoth, results, questions)
 
-%{
+%Distinct SINGLE Red
+if run_distinct_single_red
+showTrialInformation('Distinct - single RED', window, yCenter*1.4, white*fade_text);
+colors = [red];
+results_distinct_single_red = runTrials(window, letters, acceptedKeys, expDurations, startingPositions, yCenter, fade_text, fade_text, stimulusSize, maskSymbols, maskFontSize, colors, 0, zeros(size(expDurations, 2), expTrials, 4), {'RED letter?'});
+save(strcat('data/', testNumber, '_results_distinct_single_red'), 'results_distinct_single_red');
+end
+
 %Distinct SINGLE Green
+if run_distinct_single_green
 showTrialInformation('Distinct - single GREEN', window, yCenter*1.4, white*fade_text);
-results_distinct_single_green = runTrials(window, letters, acceptedKeys, expDurations, startingPositions, yCenter, fade_text, fade_text, stimulusSize, maskSymbols, maskFontSize, [green], 0, zeros(size(expDurations, 2), expTrials, 4), {'GREEN letter?'});
+colors = [green];
+results_distinct_single_green = runTrials(window, letters, acceptedKeys, expDurations, startingPositions, yCenter, fade_text, fade_text, stimulusSize, maskSymbols, maskFontSize, colors, 0, zeros(size(expDurations, 2), expTrials, 4), {'GREEN letter?'});
 save(strcat('data/', testNumber, '_results_distinct_single_green'), 'results_distinct_single_green');
-%}
+end
 
-%{
+%Distinct PARTIAL Red
+if run_distinct_partial_red
+showTrialInformation('Distinct - partial RED', window, yCenter*1.4, white*fade_text);
+colors = [red; green];
+results_distinct_partial_red = runTrials(window, letters, acceptedKeys, expDurations, startingPositions, yCenter, fade_text, fade_text, stimulusSize, maskSymbols, maskFontSize, colors, 0, zeros(size(expDurations, 2), expTrials, 5), {'RED letter?'});
+save(strcat('data/', testNumber, '_results_distinct_partial_red'), 'results_distinct_partial_red');
+end
+
+%Distinct PARTIAL Green
+if run_distinct_partial_green
+showTrialInformation('Distinct - partial GREEN', window, yCenter*1.4, white*fade_text);
+colors = [green; red];
+results_distinct_partial_green = runTrials(window, letters, acceptedKeys, expDurations, startingPositions, yCenter, fade_text, fade_text, stimulusSize, maskSymbols, maskFontSize, colors, 0, zeros(size(expDurations, 2), expTrials, 5), {'GREEN letter?'});
+save(strcat('data/', testNumber, '_results_distinct_partial_green'), 'results_distinct_partial_green');
+end
+
 %Distinct WHOLE Red-Green
+if run_distinct_whole_red_green
 showTrialInformation('Distinct - whole RED-GREEN', window, yCenter*1.4, white*fade_text);
-results_distinct_whole_red_green = runTrials(window, letters, acceptedKeys, expDurations, startingPositions, yCenter, fade_text, fade_text, stimulusSize, maskSymbols, maskFontSize, [red; green], 1, zeros(size(expDurations, 2), expTrials, 7), {'RED letter?', 'GREEN letter?'});
+colors = [red; green];
+results_distinct_whole_red_green = runTrials(window, letters, acceptedKeys, expDurations, startingPositions, yCenter, fade_text, fade_text, stimulusSize, maskSymbols, maskFontSize, colors, 1, zeros(size(expDurations, 2), expTrials, 7), {'RED letter?', 'GREEN letter?'});
 save(strcat('data/', testNumber, '_results_distinct_whole_red_green'), 'results_distinct_whole_red_green');
-%}
+end
 
-%{
+%Distinct WHOLE Green-Red
+if run_distinct_whole_green_red
+showTrialInformation('Distinct - whole GREEN-RED', window, yCenter*1.4, white*fade_text);
+colors = [green; red];
+results_distinct_whole_green_red = runTrials(window, letters, acceptedKeys, expDurations, startingPositions, yCenter, fade_text, fade_text, stimulusSize, maskSymbols, maskFontSize, colors, 1, zeros(size(expDurations, 2), expTrials, 7), {'GREEN letter?', 'RED letter?'});
+save(strcat('data/', testNumber, '_results_distinct_whole_green_red'), 'results_distinct_whole_green_red');
+end
+
+%Indistinct SINGLE Red
+if run_indistinct_single_red
+showTrialInformation('Indistinct - single RED', window, yCenter*1.4, white*fade_text);
+colors = mixRedGreen([red; green], fade_stimulus); colors = colors(1, :);
+results_indistinct_single_red = runTrials(window, letters, acceptedKeys, expDurations, startingPositions, yCenter, fade_stimulus, fade_text, stimulusSize, maskSymbols, maskFontSize, colors, 0, zeros(size(expDurations, 2), expTrials, 4), {'RED letter?'});
+save(strcat('data/', testNumber, '_results_indistinct_single_red'), 'results_indistinct_single_red');
+end
+
 %Indistinct SINGLE Green
+if run_indistinct_single_green
 showTrialInformation('Indistinct - single GREEN', window, yCenter*1.4, white*fade_text);
-results_indistinct_single_green = runTrials(window, letters, acceptedKeys, expDurations, startingPositions, yCenter, fade_stimulus, fade_text, stimulusSize, maskSymbols, maskFontSize, [green], 0, zeros(size(expDurations, 2), expTrials, 4), {'GREEN letter?'});
+colors = mixRedGreen([green; red], fade_stimulus); colors = colors(1, :);
+results_indistinct_single_green = runTrials(window, letters, acceptedKeys, expDurations, startingPositions, yCenter, fade_stimulus, fade_text, stimulusSize, maskSymbols, maskFontSize, colors, 0, zeros(size(expDurations, 2), expTrials, 4), {'GREEN letter?'});
 save(strcat('data/', testNumber, '_results_indistinct_single_green'), 'results_indistinct_single_green');
-%}
+end
+
+
+%Indistinct PARTIAL Red
+if run_indistinct_partial_red
+showTrialInformation('Indistinct - partial RED', window, yCenter*1.4, white*fade_text);
+colors = mixRedGreen([red; green], fade_stimulus);
+results_indistinct_partial_red = runTrials(window, letters, acceptedKeys, expDurations, startingPositions, yCenter, fade_stimulus, fade_text, stimulusSize, maskSymbols, maskFontSize, colors, 0, zeros(size(expDurations, 2), expTrials, 5), {'RED letter?'});
+save(strcat('data/', testNumber, '_results_indistinct_partial_red'), 'results_indistinct_partial_red');
+end
+
+%Indistinct PARTIAL Green
+if run_indistinct_partial_green
+showTrialInformation('Indistinct - partial GREEN', window, yCenter*1.4, white*fade_text);
+colors = mixRedGreen([green; red], fade_stimulus);
+results_indistinct_partial_green = runTrials(window, letters, acceptedKeys, expDurations, startingPositions, yCenter, fade_stimulus, fade_text, stimulusSize, maskSymbols, maskFontSize, colors, 0, zeros(size(expDurations, 2), expTrials, 5), {'GREEN letter?'});
+save(strcat('data/', testNumber, '_results_indistinct_partial_green'), 'results_indistinct_partial_green');
+end
 
 
 %Indistinct WHOLE Red-Green
+if run_indistinct_whole_red_green
 showTrialInformation('Indistinct - whole RED-GREEN', window, yCenter*1.4, white*fade_text);
-results_indistinct_whole_red_green = runTrials(window, letters, acceptedKeys, expDurations, startingPositions, yCenter, fade_stimulus, fade_text, stimulusSize, maskSymbols, maskFontSize, mixRedGreen([red; green], fade_stimulus), 1, zeros(size(expDurations, 2), expTrials, 7), {'RED letter?', 'GREEN letter?'});
+colors = mixRedGreen([red; green], fade_stimulus);
+results_indistinct_whole_red_green = runTrials(window, letters, acceptedKeys, expDurations, startingPositions, yCenter, fade_stimulus, fade_text, stimulusSize, maskSymbols, maskFontSize, colors, 1, zeros(size(expDurations, 2), expTrials, 7), {'RED letter?', 'GREEN letter?'});
 save(strcat('data/', testNumber, '_results_indistinct_whole_red_green'), 'results_indistinct_whole_red_green');
+end
 
+%Indistinct WHOLE Green-Red
+if run_indistinct_whole_green_red
+showTrialInformation('Indistinct - whole GREEN-RED', window, yCenter*1.4, white*fade_text);
+colors = mixRedGreen([green; red], fade_stimulus);
+results_indistinct_whole_green_red = runTrials(window, letters, acceptedKeys, expDurations, startingPositions, yCenter, fade_stimulus, fade_text, stimulusSize, maskSymbols, maskFontSize, colors, 1, zeros(size(expDurations, 2), expTrials, 7), {'GREEN letter?', 'RED letter?'});
+save(strcat('data/', testNumber, '_results_indistinct_whole_green_red'), 'results_indistinct_whole_green_red');
+end
 
 KbQueueRelease;
 %ListenChar(0);
 sca;
 
 function mixedRedGreen = mixRedGreen(colors, fade)
-r1 = colors(1, 1);
-g1 = colors(1, 2);
-b1 = colors(1, 3);
-r2 = colors(2, 1);
-g2 = colors(2, 2);
-b2 = colors(2, 3);
-
-if(r1 > g1) %first color is red
-    mixedRedGreen = [[r1-fade g1+fade b1]; [r2+fade g2-fade b2]];
+if(colors(1, 1) > colors(1, 2)) %first color is red
+    mixedRedGreen = [[1.0-fade fade 0.0]; [fade 1.0-fade 0.0]];
 else %first color is green
-    mixedRedGreen = [[r1+fade g1-fade b1]; [r2-fade g2+fade b2]];
+    mixedRedGreen = [[fade 1.0-fade 0.0]; [1.0-fade fade 0.0]];
 end
 return
 end
