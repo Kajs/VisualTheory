@@ -121,12 +121,12 @@ for y = 1:maskY
             b = letterImg(y, x, 3);
             if(r > 0.5 | g > 0.5 | b > 0.5)
                 if r > g
-                    letterImg(y, x, 1) = 1.0 * fade;
-                    letterImg(y, x, 2) = 0;
+                    letterImg(y, x, 1) = 1.0 - fade;
+                    letterImg(y, x, 2) = 0 + fade;
                     letterImg(y, x, 3) = 0;
                 else
-                    letterImg(y, x, 1) = 0;
-                    letterImg(y, x, 2) = 1.0 * fade;
+                    letterImg(y, x, 1) = 0 + fade;
+                    letterImg(y, x, 2) = 1.0 - fade;
                     letterImg(y, x, 3) = 0;
                 end
             end
