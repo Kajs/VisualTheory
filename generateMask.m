@@ -1,4 +1,4 @@
-function mask = getMask(letters, colors, fontSize, letterBoxX, letterBoxY, fade)
+function mask = getMask(letters, colors, fontSize, letterBoxX, letterBoxY, fade, greyVal)
 mask = ones(letterBoxY*3, letterBoxX*3, 3);
 
 for x = 1:3
@@ -6,7 +6,7 @@ for x = 1:3
         colorSequence = randperm(2);
         letterColors = [colors(colorSequence(1)) colors(colorSequence(2)) colors(colorSequence(2)) colors(colorSequence(1))];
         letterSequence = randperm(size(letters, 2));
-        letter = makeLetterCombination(letters, letterSequence, letterColors, fontSize, letterBoxX, letterBoxY, fade);
+        letter = makeLetterCombination(letters, letterSequence, letterColors, fontSize, letterBoxX, letterBoxY, fade, greyVal);
         m_x = (x-1) * letterBoxX;
         m_y = (y-1) * letterBoxY;
         mask(1+m_y:letterBoxY+m_y, 1+m_x:letterBoxX+m_x, :) = letter(:, :, :);    
@@ -15,12 +15,12 @@ end
 return
 end
 
-function letterCombination = makeLetterCombination(letters, perm, colors, fontSize, letterBoxX, letterBoxY, fade)
+function letterCombination = makeLetterCombination(letters, perm, colors, fontSize, letterBoxX, letterBoxY, fade, greyVal)
 letterCombination = ones(letterBoxY, letterBoxX, 3);
-NW = makeLetterImg(fontSize, letters(perm(1)), colors(1), letterBoxX, letterBoxY, fade);
-NE = makeLetterImg(fontSize, letters(perm(2)), colors(2), letterBoxX, letterBoxY, fade);
-SW = makeLetterImg(fontSize, letters(perm(3)), colors(3), letterBoxX, letterBoxY, fade);
-SE = makeLetterImg(fontSize, letters(perm(4)), colors(4), letterBoxX, letterBoxY, fade);
+NW = makeLetterImg(fontSize, letters(perm(1)), colors(1), letterBoxX, letterBoxY, fade, greyVal);
+NE = makeLetterImg(fontSize, letters(perm(2)), colors(2), letterBoxX, letterBoxY, fade, greyVal);
+SW = makeLetterImg(fontSize, letters(perm(3)), colors(3), letterBoxX, letterBoxY, fade, greyVal);
+SE = makeLetterImg(fontSize, letters(perm(4)), colors(4), letterBoxX, letterBoxY, fade, greyVal);
 
 borderX = floor(letterBoxX/2);
 borderY = floor(letterBoxY/2);
@@ -31,7 +31,7 @@ letterCombination(borderY+1:letterBoxY, borderX + 1:letterBoxX, :) = SE(borderY+
 return
 end
 
-function letterImg = makeLetterImg(fontSize, letter, letterColor, letterBoxX, letterBoxY, fade)
+function letterImg = makeLetterImg(fontSize, letter, letterColor, letterBoxX, letterBoxY, fade, greyVal)
 maskImage = zeros(fontSize,fontSize,3);
 maskX = fontSize*1.5;
 maskY = fontSize*1.5;
@@ -39,7 +39,7 @@ maskY = fontSize*1.5;
 for y = 1:maskY
     for x = 1:maskX
         for c = 1:3
-            maskImage(y, x, c) = 0.5;
+            maskImage(y, x, c) = greyVal;
         end
     end
 end
@@ -119,14 +119,14 @@ for y = 1:maskY
             r = letterImg(y, x, 1);
             g = letterImg(y, x, 2);
             b = letterImg(y, x, 3);
-            if(r > 0.5 | g > 0.5 | b > 0.5)
-                if r > g
-                    letterImg(y, x, 1) = 1.0 - fade;
-                    letterImg(y, x, 2) = 0 + fade;
-                    letterImg(y, x, 3) = 0;
-                else
+            if(r > greyVal | g > greyVal | b > greyVal)
+                if g > r
                     letterImg(y, x, 1) = 0 + fade;
                     letterImg(y, x, 2) = 1.0 - fade;
+                    letterImg(y, x, 3) = 0;
+                else
+                    letterImg(y, x, 1) = 1.0 - fade;
+                    letterImg(y, x, 2) = 0 + fade;
                     letterImg(y, x, 3) = 0;
                 end
             end
