@@ -1,5 +1,4 @@
 % Clear the workspace and the screen
-
 close all;
 clearvars;
 sca;
@@ -9,7 +8,9 @@ fade_stimulus = 0.40;
 testNumber = '003';
 expTrials = 20;           %number of trials per exposure duration
 
-screenDiag = 31.75 * 1.25; %cm
+%screenDiag = 31.75; %LAPTOP diagonal in cm
+screenDiag = sqrt(34.^2 + 26.^2); %CRT diagonal in cm
+
 screenPixelsX = 1280.0;
 screenPixelsY = 1024.0;
 screenPixelsDiag = sqrt(screenPixelsX.^2 + screenPixelsY.^2);
@@ -20,7 +21,8 @@ screenCmY = screenPixelsY * cmPerPixel;
 letterDisplacement = 10.0; %cm
 
 stimulusSize = 70;       %text size for the stimulus letters
-stimulusPositionCorrection = 0.47 / cmPerPixel;
+%stimulusPositionCorrection = 0.47 / cmPerPixel; %calibrated for LAPTOP 
+stimulusPositionCorrection = 0.5875 / cmPerPixel; %calibrated for CRT
 
 
 
@@ -30,9 +32,11 @@ screens = Screen('Screens');
 screenNumber = max(screens);
 
 % Define COLORS
-fade_text = 0.85;
-red = [1.0 0 0];
-green = [0 1.0 0];
+fade_text = 0.9;
+red_d = [1.0 0 0]*fade_text;
+red_i = [1.0 0 0];
+green_d = [0 1.0 0]*fade_text;
+green_i = [0 1.0 0];
 greyVal = 0.25;
 
 [window, windowRect] = PsychImaging('OpenWindow', screenNumber, [greyVal greyVal greyVal]);
@@ -50,28 +54,28 @@ exp1 = 3.0 * expStep * expFraction;
 exp2 = 4.0 * expStep * expFraction;
 exp3 = 5.0 * expStep * expFraction;
 exp4 = 6.0 * expStep * expFraction;
-exp5 = 8.0 * expStep * expFraction;
-expDurations = [exp5];
+exp5 = 10.0 * expStep * expFraction;
+expDurations = [2.0];
 %expDurations = expDurations(randperm(size(expDurations, 2)));
 
 %KEYBOARD Queue
 ListenChar(-1);
 KbQueueCreate();
-%function results = runTrials(introMsg, window, expDurations, startingPositions, yCenter, fade_stimulus, fade_text, stimulusSize, stimulusColors, answerBoth, results, questions, saveName, testNumber, expTrials, greyVal)
+%function results = runTrials(introMsg, window, expDurations, startingPositions, yCenter, fade_text, stimulusSize, stimulusColors, answerBoth, results, questions, saveName, testNumber, expTrials, greyVal)
 
-%results_distinct_single_red = runTrials('Distinct - single RED', window, expDurations, startingPositions, yCenter, fade_text, fade_text, stimulusSize, [red], 0, zeros(size(expDurations, 2), expTrials, 4), {'RED letter?'}, '_results_distinct_single_red', testNumber, expTrials, greyVal);
-%results_distinct_single_green = runTrials('Distinct - single GREEN', window, expDurations, startingPositions, yCenter, fade_text, fade_text, stimulusSize, [green], 0, zeros(size(expDurations, 2), expTrials, 4), {'GREEN letter?'}, '_results_distinct_single_green', testNumber, expTrials, greyVal);
-%results_distinct_partial_red = runTrials('Distinct - partial RED', window, expDurations, startingPositions, yCenter, fade_text, fade_text, stimulusSize, [red; green], 0, zeros(size(expDurations, 2), expTrials, 5), {'RED letter?'}, '_results_distinct_partial_red', testNumber, expTrials, greyVal);
-%results_distinct_partial_green = runTrials('Distinct - partial GREEN', window, expDurations, startingPositions, yCenter, fade_text, fade_text, stimulusSize, [green; red], 0, zeros(size(expDurations, 2), expTrials, 5), {'GREEN letter?'}, '_results_distinct_partial_green', testNumber, expTrials, greyVal);
-%results_distinct_whole_red_green = runTrials('Distinct - whole RED-GREEN', window, expDurations, startingPositions, yCenter, fade_text, fade_text, stimulusSize, [red; green], 1, zeros(size(expDurations, 2), expTrials, 7), {'RED letter?', 'GREEN letter?'}, '_results_distinct_whole_red_green', testNumber, expTrials, greyVal);
-%results_distinct_whole_green_red = runTrials('Distinct - whole GREEN-RED', window, expDurations, startingPositions, yCenter, fade_text, fade_text, stimulusSize, [green; red], 1, zeros(size(expDurations, 2), expTrials, 7), {'GREEN letter?', 'RED letter?'}, '_results_distinct_whole_green_red', testNumber, expTrials, greyVal);
+%results_distinct_single_red = runTrials('Distinct - single RED', window, expDurations, startingPositions, yCenter, fade_text, stimulusSize, [red_d], 0, zeros(size(expDurations, 2), expTrials, 4), {'RED letter?'}, '_results_distinct_single_red', testNumber, expTrials, greyVal);
+%results_distinct_single_green = runTrials('Distinct - single GREEN', window, expDurations, startingPositions, yCenter, fade_text, stimulusSize, [green_d], 0, zeros(size(expDurations, 2), expTrials, 4), {'GREEN letter?'}, '_results_distinct_single_green', testNumber, expTrials, greyVal);
+%results_distinct_partial_red = runTrials('Distinct - partial RED', window, expDurations, startingPositions, yCenter, fade_text, stimulusSize, [red_d; green_d], 0, zeros(size(expDurations, 2), expTrials, 5), {'RED letter?'}, '_results_distinct_partial_red', testNumber, expTrials, greyVal);
+%results_distinct_partial_green = runTrials('Distinct - partial GREEN', window, expDurations, startingPositions, yCenter, fade_text, stimulusSize, [green_d; red_d], 0, zeros(size(expDurations, 2), expTrials, 5), {'GREEN letter?'}, '_results_distinct_partial_green', testNumber, expTrials, greyVal);
+%results_distinct_whole_red_green = runTrials('Distinct - whole RED-GREEN', window, expDurations, startingPositions, yCenter, fade_text, stimulusSize, [red_d; green_d], 1, zeros(size(expDurations, 2), expTrials, 7), {'RED letter?', 'GREEN letter?'}, '_results_distinct_whole_red_green', testNumber, expTrials, greyVal);
+%results_distinct_whole_green_red = runTrials('Distinct - whole GREEN-RED', window, expDurations, startingPositions, yCenter, fade_text, stimulusSize, [green_d; red_d], 1, zeros(size(expDurations, 2), expTrials, 7), {'GREEN letter?', 'RED letter?'}, '_results_distinct_whole_green_red', testNumber, expTrials, greyVal);
 
-%results_indistinct_single_red = runTrials('Indistinct - single RED', window, expDurations, startingPositions, yCenter, fade_stimulus, fade_text, stimulusSize, mixRedGreen([red; green], fade_stimulus, 1), 0, zeros(size(expDurations, 2), expTrials, 4), {'RED letter?'}, '_results_indistinct_single_red', testNumber, expTrials, greyVal);
-%results_indistinct_single_green = runTrials('Indistinct - single GREEN', window, expDurations, startingPositions, yCenter, fade_stimulus, fade_text, stimulusSize, mixRedGreen([green; red], fade_stimulus, 1), 0, zeros(size(expDurations, 2), expTrials, 4), {'GREEN letter?'}, '_results_indistinct_single_green', testNumber, expTrials, greyVal);
-%results_indistinct_partial_red = runTrials('Indistinct - partial RED', window, expDurations, startingPositions, yCenter, fade_stimulus, fade_text, stimulusSize, mixRedGreen([red; green], fade_stimulus, 0), 0, zeros(size(expDurations, 2), expTrials, 5), {'RED letter?'}, '_results_indistinct_partial_red', testNumber, expTrials, greyVal);
-%results_indistinct_partial_green = runTrials('Indistinct - partial GREEN', window, expDurations, startingPositions, yCenter, fade_stimulus, fade_text, stimulusSize, mixRedGreen([green; red], fade_stimulus, 0), 0, zeros(size(expDurations, 2), expTrials, 5), {'GREEN letter?'}, '_results_indistinct_partial_green', testNumber, expTrials, greyVal);
-%results_indistinct_whole_red_green = runTrials('Indistinct - whole RED-GREEN', window, expDurations, startingPositions, yCenter, fade_stimulus, fade_text, stimulusSize, mixRedGreen([red; green], fade_stimulus, 0), 1, zeros(size(expDurations, 2), expTrials, 7), {'RED letter?', 'GREEN letter?'}, '_results_indistinct_whole_red_green', testNumber, expTrials, greyVal);
-results_indistinct_whole_green_red = runTrials('Indistinct - whole GREEN-RED', window, expDurations, startingPositions, yCenter, fade_stimulus, fade_text, stimulusSize, mixRedGreen([green; red], fade_stimulus, 0), 1, zeros(size(expDurations, 2), expTrials, 7), {'GREEN letter?', 'RED letter?'}, '_results_indistinct_whole_green_red', testNumber, expTrials, greyVal);
+%results_indistinct_single_red = runTrials('Indistinct - single RED', window, expDurations, startingPositions, yCenter, fade_text, stimulusSize, mixRedGreen([red_i; green_i], fade_stimulus, 1), 0, zeros(size(expDurations, 2), expTrials, 4), {'RED letter?'}, '_results_indistinct_single_red', testNumber, expTrials, greyVal);
+%results_indistinct_single_green = runTrials('Indistinct - single GREEN', window, expDurations, startingPositions, yCenter, fade_text, stimulusSize, mixRedGreen([green_i; red_i], fade_stimulus, 1), 0, zeros(size(expDurations, 2), expTrials, 4), {'GREEN letter?'}, '_results_indistinct_single_green', testNumber, expTrials, greyVal);
+results_indistinct_partial_red = runTrials('Indistinct - partial RED', window, expDurations, startingPositions, yCenter, fade_text, stimulusSize, mixRedGreen([red_i; green_i], fade_stimulus, 0), 0, zeros(size(expDurations, 2), expTrials, 5), {'RED letter?'}, '_results_indistinct_partial_red', testNumber, expTrials, greyVal);
+%results_indistinct_partial_green = runTrials('Indistinct - partial GREEN', window, expDurations, startingPositions, yCenter, fade_text, stimulusSize, mixRedGreen([green_i; red_i], fade_stimulus, 0), 0, zeros(size(expDurations, 2), expTrials, 5), {'GREEN letter?'}, '_results_indistinct_partial_green', testNumber, expTrials, greyVal);
+%results_indistinct_whole_red_green = runTrials('Indistinct - whole RED-GREEN', window, expDurations, startingPositions, yCenter, fade_text, stimulusSize, mixRedGreen([red_i; green_i], fade_stimulus, 0), 1, zeros(size(expDurations, 2), expTrials, 7), {'RED letter?', 'GREEN letter?'}, '_results_indistinct_whole_red_green', testNumber, expTrials, greyVal);
+%results_indistinct_whole_green_red = runTrials('Indistinct - whole GREEN-RED', window, expDurations, startingPositions, yCenter, fade_text, stimulusSize, mixRedGreen([green_i; red_i], fade_stimulus, 0), 1, zeros(size(expDurations, 2), expTrials, 7), {'GREEN letter?', 'RED letter?'}, '_results_indistinct_whole_green_red', testNumber, expTrials, greyVal);
 
 KbQueueRelease;
 %ListenChar(0);
@@ -173,7 +177,7 @@ end
 return
 end
 
-function results = runTrials(introMsg, window, expDurations, startingPositions, yCenter, fade_stimulus, fade_text, stimulusSize, stimulusColors, answerBoth, results, questions, saveName, testNumber, expTrials, greyVal)
+function results = runTrials(introMsg, window, expDurations, startingPositions, yCenter, fade_text, stimulusSize, stimulusColors, answerBoth, results, questions, saveName, testNumber, expTrials, greyVal)
 white = [1 1 1];
 showTrialInformation(introMsg, window, yCenter*1.4, white*fade_text);
 
@@ -182,7 +186,6 @@ acceptedKeys = [KbName('a') KbName('e') KbName('i') KbName('o') KbName('u') KbNa
 letterSequence = generateLetterSequence(letters, size(expDurations, 2));
 
 stopProgram = 0;
-maskColors = cellstr(['green'; 'red  ']);
 letterBoxX = 46;
 letterBoxY = 53;
 
@@ -200,7 +203,7 @@ for e = 1:size(expDurations, 2)
     if(stopProgram); break; end
     for t = 1:expTrials
         if(stopProgram); break; end
-        maskImg = generateMask(maskSymbols, maskColors, maskFontSize, letterBoxX, letterBoxY, fade_stimulus, greyVal);
+        maskImg = generateMask(maskSymbols, stimulusColors, maskFontSize, letterBoxX, letterBoxY, greyVal);
         dstRects1 = [left - letterBoxX*1.5, yCenter - letterBoxY*1.5, left + letterBoxX*1.5, yCenter + letterBoxY*1.5];
         dstRects2 = [right - letterBoxX*1.5, yCenter - letterBoxY*1.5, right + letterBoxX*1.5, yCenter + letterBoxY*1.5];
         
