@@ -1,4 +1,4 @@
-testNumber = '003';
+testNumber = '004';
 
 d_s_r = 'results_distinct_single_red';
 d_s_g = 'results_distinct_single_green';
@@ -17,6 +17,8 @@ xMin = -0.01;
 xMax = 0.1;
 yMin = -0.01;
 yMax = 1.01;
+pointSizeOne = 30.0;
+pointSizeTwo = pointSizeOne/1.8;
 %disp(results)
 [d_s_r_X, d_s_r_Y_1_1] = countResults(testNumber, d_s_r);
 [d_s_g_X, d_s_g_Y_1_1] = countResults(testNumber, d_s_g);
@@ -35,138 +37,151 @@ yMax = 1.01;
 figure
 %DISTINCT
 subplot(4,6,1);
-scatter(d_s_r_X, d_s_r_Y_1_1, 'filled');
+scatter(d_s_r_X, d_s_r_Y_1_1, pointSizeOne, 'filled');
 title('D-S-R');
 xlim([xMin xMax]);
 ylim([yMin yMax]);
 
+%{
+subplot(4,6,2);
+testX = linspace(0.0, xMax);
+testY = [];
+for i = testX
+    testY = [testY logistic(i)];
+end
+plot(testX, testY);
+title('D-S-R');
+xlim([xMin xMax]);
+ylim([yMin yMax]);
+%}
+
 subplot(4,6,3);
-scatter(d_s_g_X, d_s_g_Y_1_1, 'filled');
+scatter(d_s_g_X, d_s_g_Y_1_1, pointSizeOne, 'filled');
 title('D-S-G');
 xlim([xMin xMax]);
 ylim([yMin yMax]);
 
 subplot(4,6,7);
-scatter(d_p_r_X, d_p_r_Y_1_1, 'filled'); hold on;
-scatter(d_p_r_X, d_p_r_Y_1_2, 'filled');
+scatter(d_p_r_X, d_p_r_Y_1_1, pointSizeOne, 'filled'); hold on;
+scatter(d_p_r_X, d_p_r_Y_1_2, pointSizeTwo, 'filled');
 title('D-P-R');
 xlim([xMin xMax]);
 ylim([yMin yMax]);
 
 subplot(4,6,9);
-scatter(d_p_g_X, d_p_g_Y_1_1, 'filled'); hold on;
-scatter(d_p_g_X, d_p_g_Y_1_2, 'filled');
+scatter(d_p_g_X, d_p_g_Y_1_1, pointSizeOne, 'filled'); hold on;
+scatter(d_p_g_X, d_p_g_Y_1_2, pointSizeTwo, 'filled');
 title('D-P-G');
 xlim([xMin xMax]);
 ylim([yMin yMax]);
 
 subplot(4,6,13);
-scatter(d_w_r_X, d_w_r_Y_1_1, 'filled'); hold on;
-scatter(d_w_r_X, d_w_r_Y_1_2, 'filled');
+scatter(d_w_r_X, d_w_r_Y_1_1, pointSizeOne, 'filled'); hold on;
+scatter(d_w_r_X, d_w_r_Y_1_2, pointSizeTwo, 'filled');
 title('D-W-R-G');
 xlim([xMin xMax]);
 ylim([yMin yMax]);
 
 subplot(4,6,14);
-scatter(d_w_r_X, d_w_r_Y_both, 'filled'); hold on;
-scatter(d_w_r_X, d_w_r_Y_none, 'filled');
+scatter(d_w_r_X, d_w_r_Y_both, pointSizeOne, 'filled'); hold on;
+scatter(d_w_r_X, d_w_r_Y_none, pointSizeTwo, 'filled');
 title('D-W-R-G');
 xlim([xMin xMax]);
 ylim([yMin yMax]);
 
 subplot(4,6,15);
-scatter(d_w_r_X, d_w_r_Y_2_2, 'filled'); hold on;
-scatter(d_w_r_X, d_w_r_Y_2_1, 'filled');
+scatter(d_w_r_X, d_w_r_Y_2_2, pointSizeOne, 'filled'); hold on;
+scatter(d_w_r_X, d_w_r_Y_2_1, pointSizeTwo, 'filled');
 title('D-W-R-G');
 xlim([xMin xMax]);
 ylim([yMin yMax]);
 
 subplot(4,6,19);
-scatter(d_w_g_X, d_w_g_Y_1_1, 'filled'); hold on;
-scatter(d_w_g_X, d_w_g_Y_1_2, 'filled');
+scatter(d_w_g_X, d_w_g_Y_1_1, pointSizeOne, 'filled'); hold on;
+scatter(d_w_g_X, d_w_g_Y_1_2, pointSizeTwo, 'filled');
 title('D-W-G-R');
 xlim([xMin xMax]);
 ylim([yMin yMax]);
 
 subplot(4,6,20);
-scatter(d_w_g_X, d_w_g_Y_both, 'filled'); hold on;
-scatter(d_w_g_X, d_w_g_Y_none, 'filled');
+scatter(d_w_g_X, d_w_g_Y_both, pointSizeOne, 'filled'); hold on;
+scatter(d_w_g_X, d_w_g_Y_none, pointSizeTwo, 'filled');
 title('D-W-G-R');
 xlim([xMin xMax]);
 ylim([yMin yMax]);
 
 subplot(4,6,21);
-scatter(d_w_g_X, d_w_g_Y_2_2, 'filled'); hold on;
-scatter(d_w_g_X, d_w_g_Y_2_1, 'filled');
+scatter(d_w_g_X, d_w_g_Y_2_2, pointSizeOne, 'filled'); hold on;
+scatter(d_w_g_X, d_w_g_Y_2_1, pointSizeTwo, 'filled');
 title('D-W-G-R');
 xlim([xMin xMax]);
 ylim([yMin yMax]);
 
 %INDISTINCT
 subplot(4,6,4);
-scatter(i_s_r_X, i_s_r_Y_1_1, 'filled');
+scatter(i_s_r_X, i_s_r_Y_1_1, pointSizeOne, 'filled');
 title('I-S-R');
 xlim([xMin xMax]);
 ylim([yMin yMax]);
 
 subplot(4,6,6);
-scatter(i_s_g_X, i_s_g_Y_1_1, 'filled');
+scatter(i_s_g_X, i_s_g_Y_1_1, pointSizeOne, 'filled');
 title('I-S-G');
 xlim([xMin xMax]);
 ylim([yMin yMax]);
 
 subplot(4,6,10);
-scatter(i_p_r_X, i_p_r_Y_1_1, 'filled'); hold on;
-scatter(i_p_r_X, i_p_r_Y_1_2, 'filled');
+scatter(i_p_r_X, i_p_r_Y_1_1, pointSizeOne, 'filled'); hold on;
+scatter(i_p_r_X, i_p_r_Y_1_2, pointSizeTwo, 'filled');
 title('I-P-R');
 xlim([xMin xMax]);
 ylim([yMin yMax]);
 
 subplot(4,6,12);
-scatter(i_p_g_X, i_p_g_Y_1_1, 'filled'); hold on;
-scatter(i_p_g_X, i_p_g_Y_1_2, 'filled');
+scatter(i_p_g_X, i_p_g_Y_1_1, pointSizeOne, 'filled'); hold on;
+scatter(i_p_g_X, i_p_g_Y_1_2, pointSizeTwo, 'filled');
 title('I-P-G');
 xlim([xMin xMax]);
 ylim([yMin yMax]);
 
 subplot(4,6,16);
-scatter(i_w_r_X, i_w_r_Y_1_1, 'filled'); hold on;
-scatter(i_w_r_X, i_w_r_Y_1_2, 'filled');
+scatter(i_w_r_X, i_w_r_Y_1_1, pointSizeOne, 'filled'); hold on;
+scatter(i_w_r_X, i_w_r_Y_1_2, pointSizeTwo, 'filled');
 title('I-W-R-G');
 xlim([xMin xMax]);
 ylim([yMin yMax]);
 
 subplot(4,6,17);
-scatter(i_w_r_X, i_w_r_Y_both, 'filled'); hold on;
-scatter(i_w_r_X, i_w_r_Y_none, 'filled');
+scatter(i_w_r_X, i_w_r_Y_both, pointSizeOne, 'filled'); hold on;
+scatter(i_w_r_X, i_w_r_Y_none, pointSizeTwo, 'filled');
 title('I-W-R-G');
 xlim([xMin xMax]);
 ylim([yMin yMax]);
 
 subplot(4,6,18);
-scatter(i_w_r_X, i_w_r_Y_2_2, 'filled'); hold on;
-scatter(i_w_r_X, i_w_r_Y_2_1, 'filled');
+scatter(i_w_r_X, i_w_r_Y_2_2, pointSizeOne, 'filled'); hold on;
+scatter(i_w_r_X, i_w_r_Y_2_1, pointSizeTwo, 'filled');
 title('I-W-R-G');
 xlim([xMin xMax]);
 ylim([yMin yMax]);
 
 subplot(4,6,22);
-scatter(i_w_g_X, i_w_g_Y_1_1, 'filled'); hold on;
-scatter(i_w_g_X, i_w_g_Y_1_2, 'filled');
+scatter(i_w_g_X, i_w_g_Y_1_1, pointSizeOne, 'filled'); hold on;
+scatter(i_w_g_X, i_w_g_Y_1_2, pointSizeTwo, 'filled');
 title('I-W-G-R');
 xlim([xMin xMax]);
 ylim([yMin yMax]);
 
 subplot(4,6,23);
-scatter(i_w_g_X, i_w_g_Y_both, 'filled'); hold on;
-scatter(i_w_g_X, i_w_g_Y_none, 'filled');
+scatter(i_w_g_X, i_w_g_Y_both, pointSizeOne, 'filled'); hold on;
+scatter(i_w_g_X, i_w_g_Y_none, pointSizeTwo, 'filled');
 title('I-W-G-R');
 xlim([xMin xMax]);
 ylim([yMin yMax]);
 
 subplot(4,6,24);
-scatter(i_w_g_X, i_w_g_Y_2_2, 'filled'); hold on;
-scatter(i_w_g_X, i_w_g_Y_2_1, 'filled');
+scatter(i_w_g_X, i_w_g_Y_2_2, pointSizeOne, 'filled'); hold on;
+scatter(i_w_g_X, i_w_g_Y_2_1, pointSizeTwo, 'filled');
 title('I-W-G-R');
 xlim([xMin xMax]);
 ylim([yMin yMax]);
@@ -199,15 +214,20 @@ end
 for e = 1:size(expDurations, 1)
     for t = 1:size(expDurations, 2)
         if expDurations(e, t) > 0
-            m_1_1(expDurations(e, t)) = m_1_1(expDurations(e, t)) + (answer1(e, t) == stimulus1(e, t));
-            if resultSize >= 5
+            if resultSize < 5 % SINGLE
+                m_1_1(expDurations(e, t)) = m_1_1(expDurations(e, t)) + (answer1(e, t) == stimulus1(e, t));
+            end
+            if resultSize == 5 % PARTIAL
+                m_1_1(expDurations(e, t)) = m_1_1(expDurations(e, t)) + (answer1(e, t) == stimulus1(e, t));
                 m_1_2(expDurations(e, t)) = m_1_2(expDurations(e, t)) + (answer1(e, t) == stimulus2(e, t));
             end
-            if resultSize == 7
-                m_2_2(expDurations(e, t)) = m_2_2(expDurations(e, t)) + (answer2(e, t) == stimulus2(e, t));
-                m_2_1(expDurations(e, t)) = m_2_1(expDurations(e, t)) + (answer2(e, t) == stimulus1(e, t));
-                m_both(expDurations(e, t)) = m_both(expDurations(e, t)) + ((stimulus1(e, t) == answer1(e, t)) & (stimulus2(e, t) == answer2(e, t)));
-                m_none(expDurations(e, t)) = m_none(expDurations(e, t)) + ((stimulus1(e, t) ~= answer1(e, t)) & (stimulus2(e, t) ~= answer2(e, t)));
+            if resultSize == 7 % WHOLE
+                m_1_1(expDurations(e, t)) = m_1_1(expDurations(e, t))   + (answer1(e, t) == stimulus1(e, t) & answer2(e, t) ~= stimulus2(e, t));
+                m_1_2(expDurations(e, t)) = m_1_2(expDurations(e, t))   + (answer1(e, t) == stimulus2(e, t) & answer2(e, t) ~= stimulus1(e, t));
+                m_2_2(expDurations(e, t)) = m_2_2(expDurations(e, t))   + (answer2(e, t) == stimulus2(e, t) & answer1(e, t) ~= stimulus1(e, t));
+                m_2_1(expDurations(e, t)) = m_2_1(expDurations(e, t))   + (answer2(e, t) == stimulus1(e, t) & answer1(e, t) ~= stimulus2(e, t));
+                m_both(expDurations(e, t)) = m_both(expDurations(e, t)) + (answer1(e, t) == stimulus1(e, t) & answer2(e, t) == stimulus2(e, t));
+                m_none(expDurations(e, t)) = m_none(expDurations(e, t)) + (answer1(e, t) == stimulus2(e, t) & answer2(e, t) == stimulus1(e, t));
             end
         end
     end
@@ -246,5 +266,13 @@ for i = 1:size(expKeys, 2)
     end
 end
 
+return
+end
+
+function y = logistic(x)
+L = 1.0;
+k = 150.0;
+x0 = 0.05;
+y = L/(1.0 + exp(-k*(x-x0)));
 return
 end
