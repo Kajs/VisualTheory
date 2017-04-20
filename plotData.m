@@ -19,28 +19,45 @@ yMin = -0.01;
 yMax = 1.01;
 pointSizeOne = 30.0;
 pointSizeTwo = pointSizeOne/1.8;
-%disp(results)
-[d_s_r_X, d_s_r_Y_1_1] = countResults(testNumber, d_s_r);
-[d_s_g_X, d_s_g_Y_1_1] = countResults(testNumber, d_s_g);
-[d_p_r_X, d_p_r_Y_1_1, d_p_r_Y_1_2] = countResults(testNumber, d_p_r);
-[d_p_g_X, d_p_g_Y_1_1, d_p_g_Y_1_2] = countResults(testNumber, d_p_g);
-[d_w_r_X, d_w_r_Y_1_1, d_w_r_Y_1_2, d_w_r_Y_2_2, d_w_r_Y_2_1, d_w_r_Y_both, d_w_r_Y_none] = countResults(testNumber, d_w_r);
-[d_w_g_X, d_w_g_Y_1_1, d_w_g_Y_1_2, d_w_g_Y_2_2, d_w_g_Y_2_1, d_w_g_Y_both, d_w_g_Y_none] = countResults(testNumber, d_w_g);
 
-[i_s_r_X, i_s_r_Y_1_1] = countResults(testNumber, i_s_r);
-[i_s_g_X, i_s_g_Y_1_1] = countResults(testNumber, i_s_g);
-[i_p_r_X, i_p_r_Y_1_1, i_p_r_Y_1_2] = countResults(testNumber, i_p_r);
-[i_p_g_X, i_p_g_Y_1_1, i_p_g_Y_1_2] = countResults(testNumber, i_p_g);
-[i_w_r_X, i_w_r_Y_1_1, i_w_r_Y_1_2, i_w_r_Y_2_2, i_w_r_Y_2_1, i_w_r_Y_both, i_w_r_Y_none] = countResults(testNumber, i_w_r);
-[i_w_g_X, i_w_g_Y_1_1, i_w_g_Y_1_2, i_w_g_Y_2_2, i_w_g_Y_2_1, i_w_g_Y_both, i_w_g_Y_none] = countResults(testNumber, i_w_g);
+plot_d_s_r = 1;
+plot_d_s_g = 1;
+plot_d_p_r = 1;
+plot_d_p_g = 1;
+plot_d_w_r = 1;
+plot_d_w_g = 1;
+
+plot_i_s_r = 1;
+plot_i_s_g = 1;
+plot_i_p_r = 1;
+plot_i_p_g = 1;
+plot_i_w_r = 1;
+plot_i_w_g = 1;
+
+%disp(results)
+if plot_d_s_r; [d_s_r_X, d_s_r_Y_1_1] = countResults(testNumber, d_s_r); end
+if plot_d_s_g; [d_s_g_X, d_s_g_Y_1_1] = countResults(testNumber, d_s_g); end
+if plot_d_p_r; [d_p_r_X, d_p_r_Y_1_1, d_p_r_Y_1_2] = countResults(testNumber, d_p_r); end
+if plot_d_p_g; [d_p_g_X, d_p_g_Y_1_1, d_p_g_Y_1_2] = countResults(testNumber, d_p_g); end
+if plot_d_w_r; [d_w_r_X, d_w_r_Y_1_1, d_w_r_Y_1_2, d_w_r_Y_2_2, d_w_r_Y_2_1, d_w_r_Y_both, d_w_r_Y_none] = countResults(testNumber, d_w_r); end
+if plot_d_w_g; [d_w_g_X, d_w_g_Y_1_1, d_w_g_Y_1_2, d_w_g_Y_2_2, d_w_g_Y_2_1, d_w_g_Y_both, d_w_g_Y_none] = countResults(testNumber, d_w_g); end
+
+if plot_i_s_r; [i_s_r_X, i_s_r_Y_1_1] = countResults(testNumber, i_s_r); end
+if plot_i_s_g; [i_s_g_X, i_s_g_Y_1_1] = countResults(testNumber, i_s_g); end
+if plot_i_p_r; [i_p_r_X, i_p_r_Y_1_1, i_p_r_Y_1_2] = countResults(testNumber, i_p_r); end
+if plot_i_p_g; [i_p_g_X, i_p_g_Y_1_1, i_p_g_Y_1_2] = countResults(testNumber, i_p_g); end
+if plot_i_w_r; [i_w_r_X, i_w_r_Y_1_1, i_w_r_Y_1_2, i_w_r_Y_2_2, i_w_r_Y_2_1, i_w_r_Y_both, i_w_r_Y_none] = countResults(testNumber, i_w_r); end
+if plot_i_w_g; [i_w_g_X, i_w_g_Y_1_1, i_w_g_Y_1_2, i_w_g_Y_2_2, i_w_g_Y_2_1, i_w_g_Y_both, i_w_g_Y_none] = countResults(testNumber, i_w_g); end
 
 figure
 %DISTINCT
-subplot(4,6,1);
-scatter(d_s_r_X, d_s_r_Y_1_1, pointSizeOne, 'filled');
-title('D-S-R');
-xlim([xMin xMax]);
-ylim([yMin yMax]);
+if plot_d_s_r
+    subplot(4,6,1);
+    scatter(d_s_r_X, d_s_r_Y_1_1, pointSizeOne, 'filled');
+    title('D-S-R');
+    xlim([xMin xMax]);
+    ylim([yMin yMax]);
+end
 
 %{
 subplot(4,6,2);
@@ -55,136 +72,158 @@ xlim([xMin xMax]);
 ylim([yMin yMax]);
 %}
 
-subplot(4,6,3);
-scatter(d_s_g_X, d_s_g_Y_1_1, pointSizeOne, 'filled');
-title('D-S-G');
-xlim([xMin xMax]);
-ylim([yMin yMax]);
+if plot_d_s_g
+    subplot(4,6,3);
+    scatter(d_s_g_X, d_s_g_Y_1_1, pointSizeOne, 'filled');
+    title('D-S-G');
+    xlim([xMin xMax]);
+    ylim([yMin yMax]);
+end
 
-subplot(4,6,7);
-scatter(d_p_r_X, d_p_r_Y_1_1, pointSizeOne, 'filled'); hold on;
-scatter(d_p_r_X, d_p_r_Y_1_2, pointSizeTwo, 'filled');
-title('D-P-R');
-xlim([xMin xMax]);
-ylim([yMin yMax]);
+if plot_d_p_r
+    subplot(4,6,7);
+    scatter(d_p_r_X, d_p_r_Y_1_1, pointSizeOne, 'filled'); hold on;
+    scatter(d_p_r_X, d_p_r_Y_1_2, pointSizeTwo, 'filled');
+    title('D-P-R');
+    xlim([xMin xMax]);
+    ylim([yMin yMax]);
+end
 
-subplot(4,6,9);
-scatter(d_p_g_X, d_p_g_Y_1_1, pointSizeOne, 'filled'); hold on;
-scatter(d_p_g_X, d_p_g_Y_1_2, pointSizeTwo, 'filled');
-title('D-P-G');
-xlim([xMin xMax]);
-ylim([yMin yMax]);
+if plot_d_p_g
+    subplot(4,6,9);
+    scatter(d_p_g_X, d_p_g_Y_1_1, pointSizeOne, 'filled'); hold on;
+    scatter(d_p_g_X, d_p_g_Y_1_2, pointSizeTwo, 'filled');
+    title('D-P-G');
+    xlim([xMin xMax]);
+    ylim([yMin yMax]);
+end
 
-subplot(4,6,13);
-scatter(d_w_r_X, d_w_r_Y_1_1, pointSizeOne, 'filled'); hold on;
-scatter(d_w_r_X, d_w_r_Y_1_2, pointSizeTwo, 'filled');
-title('D-W-R-G');
-xlim([xMin xMax]);
-ylim([yMin yMax]);
+if plot_d_w_g
+    subplot(4,6,13);
+    scatter(d_w_r_X, d_w_r_Y_1_1, pointSizeOne, 'filled'); hold on;
+    scatter(d_w_r_X, d_w_r_Y_1_2, pointSizeTwo, 'filled');
+    title('D-W-R-G');
+    xlim([xMin xMax]);
+    ylim([yMin yMax]);
+    
+    subplot(4,6,14);
+    scatter(d_w_r_X, d_w_r_Y_both, pointSizeOne, 'filled'); hold on;
+    scatter(d_w_r_X, d_w_r_Y_none, pointSizeTwo, 'filled');
+    title('D-W-R-G');
+    xlim([xMin xMax]);
+    ylim([yMin yMax]);
+    
+    subplot(4,6,15);
+    scatter(d_w_r_X, d_w_r_Y_2_2, pointSizeOne, 'filled'); hold on;
+    scatter(d_w_r_X, d_w_r_Y_2_1, pointSizeTwo, 'filled');
+    title('D-W-R-G');
+    xlim([xMin xMax]);
+    ylim([yMin yMax]);
+end
 
-subplot(4,6,14);
-scatter(d_w_r_X, d_w_r_Y_both, pointSizeOne, 'filled'); hold on;
-scatter(d_w_r_X, d_w_r_Y_none, pointSizeTwo, 'filled');
-title('D-W-R-G');
-xlim([xMin xMax]);
-ylim([yMin yMax]);
-
-subplot(4,6,15);
-scatter(d_w_r_X, d_w_r_Y_2_2, pointSizeOne, 'filled'); hold on;
-scatter(d_w_r_X, d_w_r_Y_2_1, pointSizeTwo, 'filled');
-title('D-W-R-G');
-xlim([xMin xMax]);
-ylim([yMin yMax]);
-
-subplot(4,6,19);
-scatter(d_w_g_X, d_w_g_Y_1_1, pointSizeOne, 'filled'); hold on;
-scatter(d_w_g_X, d_w_g_Y_1_2, pointSizeTwo, 'filled');
-title('D-W-G-R');
-xlim([xMin xMax]);
-ylim([yMin yMax]);
-
-subplot(4,6,20);
-scatter(d_w_g_X, d_w_g_Y_both, pointSizeOne, 'filled'); hold on;
-scatter(d_w_g_X, d_w_g_Y_none, pointSizeTwo, 'filled');
-title('D-W-G-R');
-xlim([xMin xMax]);
-ylim([yMin yMax]);
-
-subplot(4,6,21);
-scatter(d_w_g_X, d_w_g_Y_2_2, pointSizeOne, 'filled'); hold on;
-scatter(d_w_g_X, d_w_g_Y_2_1, pointSizeTwo, 'filled');
-title('D-W-G-R');
-xlim([xMin xMax]);
-ylim([yMin yMax]);
+if plot_d_w_g
+    subplot(4,6,19);
+    scatter(d_w_g_X, d_w_g_Y_1_1, pointSizeOne, 'filled'); hold on;
+    scatter(d_w_g_X, d_w_g_Y_1_2, pointSizeTwo, 'filled');
+    title('D-W-G-R');
+    xlim([xMin xMax]);
+    ylim([yMin yMax]);
+    
+    subplot(4,6,20);
+    scatter(d_w_g_X, d_w_g_Y_both, pointSizeOne, 'filled'); hold on;
+    scatter(d_w_g_X, d_w_g_Y_none, pointSizeTwo, 'filled');
+    title('D-W-G-R');
+    xlim([xMin xMax]);
+    ylim([yMin yMax]);
+    
+    subplot(4,6,21);
+    scatter(d_w_g_X, d_w_g_Y_2_2, pointSizeOne, 'filled'); hold on;
+    scatter(d_w_g_X, d_w_g_Y_2_1, pointSizeTwo, 'filled');
+    title('D-W-G-R');
+    xlim([xMin xMax]);
+    ylim([yMin yMax]);
+end
 
 %INDISTINCT
-subplot(4,6,4);
-scatter(i_s_r_X, i_s_r_Y_1_1, pointSizeOne, 'filled');
-title('I-S-R');
-xlim([xMin xMax]);
-ylim([yMin yMax]);
+if plot_i_s_r
+    subplot(4,6,4);
+    scatter(i_s_r_X, i_s_r_Y_1_1, pointSizeOne, 'filled');
+    title('I-S-R');
+    xlim([xMin xMax]);
+    ylim([yMin yMax]);
+end
 
-subplot(4,6,6);
-scatter(i_s_g_X, i_s_g_Y_1_1, pointSizeOne, 'filled');
-title('I-S-G');
-xlim([xMin xMax]);
-ylim([yMin yMax]);
+if plot_i_s_g
+    subplot(4,6,6);
+    scatter(i_s_g_X, i_s_g_Y_1_1, pointSizeOne, 'filled');
+    title('I-S-G');
+    xlim([xMin xMax]);
+    ylim([yMin yMax]);
+end
 
-subplot(4,6,10);
-scatter(i_p_r_X, i_p_r_Y_1_1, pointSizeOne, 'filled'); hold on;
-scatter(i_p_r_X, i_p_r_Y_1_2, pointSizeTwo, 'filled');
-title('I-P-R');
-xlim([xMin xMax]);
-ylim([yMin yMax]);
+if plot_i_p_r
+    subplot(4,6,10);
+    scatter(i_p_r_X, i_p_r_Y_1_1, pointSizeOne, 'filled'); hold on;
+    scatter(i_p_r_X, i_p_r_Y_1_2, pointSizeTwo, 'filled');
+    title('I-P-R');
+    xlim([xMin xMax]);
+    ylim([yMin yMax]);
+end
 
-subplot(4,6,12);
-scatter(i_p_g_X, i_p_g_Y_1_1, pointSizeOne, 'filled'); hold on;
-scatter(i_p_g_X, i_p_g_Y_1_2, pointSizeTwo, 'filled');
-title('I-P-G');
-xlim([xMin xMax]);
-ylim([yMin yMax]);
+if plot_i_p_g
+    subplot(4,6,12);
+    scatter(i_p_g_X, i_p_g_Y_1_1, pointSizeOne, 'filled'); hold on;
+    scatter(i_p_g_X, i_p_g_Y_1_2, pointSizeTwo, 'filled');
+    title('I-P-G');
+    xlim([xMin xMax]);
+    ylim([yMin yMax]);
+end
 
-subplot(4,6,16);
-scatter(i_w_r_X, i_w_r_Y_1_1, pointSizeOne, 'filled'); hold on;
-scatter(i_w_r_X, i_w_r_Y_1_2, pointSizeTwo, 'filled');
-title('I-W-R-G');
-xlim([xMin xMax]);
-ylim([yMin yMax]);
+if plot_i_w_r
+    subplot(4,6,16);
+    scatter(i_w_r_X, i_w_r_Y_1_1, pointSizeOne, 'filled'); hold on;
+    scatter(i_w_r_X, i_w_r_Y_1_2, pointSizeTwo, 'filled');
+    title('I-W-R-G');
+    xlim([xMin xMax]);
+    ylim([yMin yMax]);
+    
+    subplot(4,6,17);
+    scatter(i_w_r_X, i_w_r_Y_both, pointSizeOne, 'filled'); hold on;
+    scatter(i_w_r_X, i_w_r_Y_none, pointSizeTwo, 'filled');
+    title('I-W-R-G');
+    xlim([xMin xMax]);
+    ylim([yMin yMax]);
+    
+    subplot(4,6,18);
+    scatter(i_w_r_X, i_w_r_Y_2_2, pointSizeOne, 'filled'); hold on;
+    scatter(i_w_r_X, i_w_r_Y_2_1, pointSizeTwo, 'filled');
+    title('I-W-R-G');
+    xlim([xMin xMax]);
+    ylim([yMin yMax]);
+end
 
-subplot(4,6,17);
-scatter(i_w_r_X, i_w_r_Y_both, pointSizeOne, 'filled'); hold on;
-scatter(i_w_r_X, i_w_r_Y_none, pointSizeTwo, 'filled');
-title('I-W-R-G');
-xlim([xMin xMax]);
-ylim([yMin yMax]);
-
-subplot(4,6,18);
-scatter(i_w_r_X, i_w_r_Y_2_2, pointSizeOne, 'filled'); hold on;
-scatter(i_w_r_X, i_w_r_Y_2_1, pointSizeTwo, 'filled');
-title('I-W-R-G');
-xlim([xMin xMax]);
-ylim([yMin yMax]);
-
-subplot(4,6,22);
-scatter(i_w_g_X, i_w_g_Y_1_1, pointSizeOne, 'filled'); hold on;
-scatter(i_w_g_X, i_w_g_Y_1_2, pointSizeTwo, 'filled');
-title('I-W-G-R');
-xlim([xMin xMax]);
-ylim([yMin yMax]);
-
-subplot(4,6,23);
-scatter(i_w_g_X, i_w_g_Y_both, pointSizeOne, 'filled'); hold on;
-scatter(i_w_g_X, i_w_g_Y_none, pointSizeTwo, 'filled');
-title('I-W-G-R');
-xlim([xMin xMax]);
-ylim([yMin yMax]);
-
-subplot(4,6,24);
-scatter(i_w_g_X, i_w_g_Y_2_2, pointSizeOne, 'filled'); hold on;
-scatter(i_w_g_X, i_w_g_Y_2_1, pointSizeTwo, 'filled');
-title('I-W-G-R');
-xlim([xMin xMax]);
-ylim([yMin yMax]);
+if plot_i_w_g
+    subplot(4,6,22);
+    scatter(i_w_g_X, i_w_g_Y_1_1, pointSizeOne, 'filled'); hold on;
+    scatter(i_w_g_X, i_w_g_Y_1_2, pointSizeTwo, 'filled');
+    title('I-W-G-R');
+    xlim([xMin xMax]);
+    ylim([yMin yMax]);
+    
+    subplot(4,6,23);
+    scatter(i_w_g_X, i_w_g_Y_both, pointSizeOne, 'filled'); hold on;
+    scatter(i_w_g_X, i_w_g_Y_none, pointSizeTwo, 'filled');
+    title('I-W-G-R');
+    xlim([xMin xMax]);
+    ylim([yMin yMax]);
+    
+    subplot(4,6,24);
+    scatter(i_w_g_X, i_w_g_Y_2_2, pointSizeOne, 'filled'); hold on;
+    scatter(i_w_g_X, i_w_g_Y_2_1, pointSizeTwo, 'filled');
+    title('I-W-G-R');
+    xlim([xMin xMax]);
+    ylim([yMin yMax]);
+end
 
 function [X, Y_1_1, Y_1_2, Y_2_2, Y_2_1, Y_both, Y_none] = countResults(testNumber, testType)
 load(strcat('data/', testNumber, '_', testType), 'results');
