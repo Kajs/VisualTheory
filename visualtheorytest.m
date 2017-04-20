@@ -24,7 +24,6 @@ stimulusSize = 70;       %text size for the stimulus letters
 stimulusPositionCorrection = 0.5875 / cmPerPixel; %calibrated for CRT
 
 
-
 PsychDefaultSetup(2);
 
 screens = Screen('Screens');
@@ -58,9 +57,8 @@ exp3 = 4.0 * expStep - (expStep * expFraction);
 exp4 = 5.0 * expStep - (expStep * expFraction);
 exp5 = 6.0 * expStep - (expStep * expFraction);
 exp6 = 7.0 * expStep - (expStep * expFraction);
-%expDurations = [exp6 exp5 exp4 exp3 exp2 exp1];
-expDurations = [exp6];
-%expDurations = expDurations(randperm(size(expDurations, 2)));
+expDurations = [exp6 exp5 exp4 exp3 exp2 exp1];
+%expDurations = [exp6];
 
 %KEYBOARD Queue
 ListenChar(-1);
@@ -106,42 +104,53 @@ end
 return
 end
 
-function letterSequence = generateLetterSequence(letters, expdurations)
+function trialSequence = generateTrialSequence(letters, expDurations, expTrials, startingPositions)
+left = startingPositions(1);
+right = startingPositions(2);
 numLetters = size(letters, 2);
-letterSequence = zeros(expdurations, numLetters*(numLetters-1), 2);
-for i = 1:expdurations
+numExpDurations = size(expDurations, 2);
+trialSequence = zeros(numExpDurations * expTrials, 5);
+
+%Insert Letter Sequence
+for i = 1:numExpDurations
     for a = 1:numLetters
         count = 1;
         for b = 1:numLetters - 1      
-            letterSequence(i, b + (a-1)*(numLetters-1), 1) = a;
+            trialSequence(b + (a-1)*(numLetters-1) + (i-1)*expTrials, 1) = a;
             if count == a; count = count + 1; end
-            letterSequence(i, b + (a-1)*(numLetters-1), 2) = count;
+            trialSequence(b + (a-1)*(numLetters-1) + (i-1)*expTrials, 2) = count;
             count = count + 1;
         end
     end
-    perm = randperm(numLetters*(numLetters-1));
-    letterSequence(i, :, 1) = letterSequence(i, perm, 1);
-    letterSequence(i, :, 2) = letterSequence(i, perm, 2);
-end
-return
 end
 
-function letterPositionSequence = generateLetterPositionSequence(expTrials, expdurations, left, right)
-letterPositionSequence = zeros(expdurations, expTrials, 2);
-for i = 1:expdurations
-    for e = 1:expTrials
-        if e <= expTrials/2
-            letterPositionSequence(i, e, 1) = left;
-            letterPositionSequence(i, e, 2) = right;
-        else
-            letterPositionSequence(i, e, 1) = right;
-            letterPositionSequence(i, e, 2) = left;
-        end
+%Insert positions (needs additional randomization)
+for e = 1:numExpDurations*expTrials
+    if e <= numExpDurations*expTrials/2
+        trialSequence(e, 3) = left;
+        trialSequence(e, 4) = right;
+    else
+        trialSequence(e, 3) = right;
+        trialSequence(e, 4) = left;
     end
-    perm = randperm(expTrials);
-    letterPositionSequence(i, :, 1) = letterPositionSequence(i, perm, 1);
-    letterPositionSequence(i, :, 2) = letterPositionSequence(i, perm, 2);
 end
+
+%Insert exposure duration
+for i = 1:numExpDurations
+    for t = 1:expTrials
+        trialSequence(t + (i-1)*expTrials, 5) = expDurations(i);
+    end
+end
+permPositions = randperm(numExpDurations*expTrials);
+trialSequence(:, 3) = trialSequence(permPositions, 3);
+trialSequence(:, 4) = trialSequence(permPositions, 4);
+
+permGeneral = randperm(numExpDurations*expTrials);
+trialSequence(:, 1) = trialSequence(permGeneral, 1);
+trialSequence(:, 2) = trialSequence(permGeneral, 2);
+trialSequence(:, 3) = trialSequence(permGeneral, 3);
+trialSequence(:, 4) = trialSequence(permGeneral, 4);
+trialSequence(:, 5) = trialSequence(permGeneral, 5);
 return
 end
 
@@ -220,7 +229,8 @@ end
 
 letters = ['A' 'E' 'I' 'O' 'U'];
 acceptedKeys = [KbName('a') KbName('e') KbName('i') KbName('o') KbName('u') KbName('ESCAPE')];
-letterSequence = generateLetterSequence(letters, size(expDurations, 2));
+trialSequence = generateTrialSequence(letters, expDurations, expTrials, startingPositions);
+disp(trialSequence);
 
 letterBoxX = 46;
 letterBoxY = 53;
@@ -231,9 +241,8 @@ focusChar = '+';
 focusCharColor = fade_text * [1.0 1.0 1.0];
 left = startingPositions(1);
 right = startingPositions(2);
-letterPositionSequence = generateLetterPositionSequence(expTrials, size(expDurations, 2), left, right);
 
-maskSymbols = ['-' '|' '^' '<' '\' '*' '~' '&' '=' '{' '[' ']' '}'];
+maskSymbols = ['|' '^' '<' '>' '\' '/' '*' '~' '&' '=' '[' ']' '{' '}' '§' '¢' '×' '╬' 'X' '¤' 'Δ' 'љ' 'α' 'ж' 'Д' 'Њ' 'ф'];
 maskFontSize = 70;
 maskDur = 2.0; 
 
@@ -246,17 +255,15 @@ for e = 1:size(expDurations, 2)
         dstRects1 = [left - letterBoxX*1.5, yCenter - letterBoxY*1.5, left + letterBoxX*1.5, yCenter + letterBoxY*1.5];
         dstRects2 = [right - letterBoxX*1.5, yCenter - letterBoxY*1.5, right + letterBoxX*1.5, yCenter + letterBoxY*1.5];
         
-        positions = startingPositions(randperm(2));
-        %twoColors = size(stimulusColors, 1) == 2;
-        expduration = expDurations(e);
-        
-        L1 = letters(letterSequence(e, t, 1));
-        P1 = letterPositionSequence(e, t, 1);
+        sequencePos = t + (e-1) * expTrials;
+        expduration = trialSequence(sequencePos, 5);
+        L1 = letters(trialSequence(sequencePos, 1));
+        P1 = trialSequence(sequencePos, 3);
         C1 = stimulusColors(1, :);
         
         if twoColors
-            L2 = letters(letterSequence(e, t, 2));
-            P2 = letterPositionSequence(e, t, 2);
+            L2 = letters(trialSequence(sequencePos, 2));
+            P2 = trialSequence(sequencePos, 4);
             C2 = stimulusColors(2, :);
         end
         
@@ -293,12 +300,12 @@ for e = 1:size(expDurations, 2)
         end
         KbQueueStop();
         
-        results(e, t, 1) = expDurations(e); %exposure duration
-        results(e, t, 2) = lower(letters(letterSequence(e, t, 1))); %stimulus 1
+        results(e, t, 1) = expduration; %exposure duration
+        results(e, t, 2) = lower(L1); %stimulus 1
         results(e, t, 3) = key1; %answer 1
         results(e, t, 4) = time1 - time_start; %response time 1
         if (twoColors)
-            results(e, t, 5) = lower(letters(letterSequence(e, t, 2))); %stimulus 2
+            results(e, t, 5) = lower(L2); %stimulus 2
         end
         if(answerBoth)
             results(e, t, 6) = key2; %answer 2
