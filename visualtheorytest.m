@@ -72,10 +72,11 @@ HideCursor(screenNumber);
 global stopProgram;
 stopProgram = 0;
 
-%function results = runTrials(introMsg, window, expDurations, startingPositions, yCenter, fade_text, stimulusSize, stimulusColors, answerBoth, results, questions, saveName, testNumber, expTrials, greyVal)
+%function results = runTrials(introMsg, window, expDurations, startingPositions, yCenter, fade_text, stimulusSize, stimulusColors, answerBoth, results, questions, saveName, testNumber, expTrials, greyVal, twoColors, giveFeedback)
+trainingMsg_whole = 'The goal in this test is to\nidentify both letters in the correct order.';
 
 if redFirst
-    %results_training_distinct_whole_red_green = training('TRAINING: Distinct RED-GREEN', window, trainingExpDurations, startingPositions, yCenter, fade_text, stimulusSize, [red_d; green_d], 1, zeros(size(expDurations, 2), expTrials, 7), {'RED letter?', 'GREEN letter?'}, '_results_training_distinct_whole_red_green', testNumber, expTrials, greyVal, 1, 1);
+    results_training_distinct_whole_red_green = training('TRAINING\n\nDistinct whole RED-GREEN', window, trainingExpDurations, startingPositions, yCenter, fade_text, stimulusSize, [red_d; green_d], 1, zeros(size(expDurations, 2), expTrials, 7), {'RED letter?', 'GREEN letter?'}, '_results_training_distinct_whole_red_green', testNumber, expTrials, greyVal, 1, 1, trainingMsg_whole);
     
     results_distinct_single_red = runTrials('Distinct - single RED', window, expDurations, startingPositions, yCenter, fade_text, stimulusSize, [red_d; green_d], 0, zeros(size(expDurations, 2), expTrials, 4), {'RED letter?'}, '_results_distinct_single_red', testNumber, expTrials, greyVal, 0, 0);
     results_distinct_single_green = runTrials('Distinct - single GREEN', window, expDurations, startingPositions, yCenter, fade_text, stimulusSize, [green_d; red_d], 0, zeros(size(expDurations, 2), expTrials, 4), {'GREEN letter?'}, '_results_distinct_single_green', testNumber, expTrials, greyVal, 0, 0);
@@ -84,7 +85,7 @@ if redFirst
     results_distinct_whole_red_green = runTrials('Distinct - whole RED-GREEN', window, expDurations, startingPositions, yCenter, fade_text, stimulusSize, [red_d; green_d], 1, zeros(size(expDurations, 2), expTrials, 7), {'RED letter?', 'GREEN letter?'}, '_results_distinct_whole_red_green', testNumber, expTrials, greyVal, 1, 0);
     results_distinct_whole_green_red = runTrials('Distinct - whole GREEN-RED', window, expDurations, startingPositions, yCenter, fade_text, stimulusSize, [green_d; red_d], 1, zeros(size(expDurations, 2), expTrials, 7), {'GREEN letter?', 'RED letter?'}, '_results_distinct_whole_green_red', testNumber, expTrials, greyVal, 1, 0);
  
-    results_training_indistinct_whole_red_green = training('TRAINING: Indistinct RED-GREEN', window, trainingExpDurations, startingPositions, yCenter, fade_text, stimulusSize, mixRedGreen([red_i; green_i], fade_stimulus), 1, zeros(size(expDurations, 2), expTrials, 7), {'RED letter?', 'GREEN letter?'}, '_results_training_indistinct_whole_red_green', testNumber, expTrials, greyVal, 1, 1);
+    results_training_indistinct_whole_red_green = training('TRAINING\n\nIndistinct whole RED-GREEN', window, trainingExpDurations, startingPositions, yCenter, fade_text, stimulusSize, mixRedGreen([red_i; green_i], fade_stimulus), 1, zeros(size(expDurations, 2), expTrials, 7), {'RED letter?', 'GREEN letter?'}, '_results_training_indistinct_whole_red_green', testNumber, expTrials, greyVal, 1, 1, trainingMsg_whole);
     
     results_indistinct_single_red = runTrials('Indistinct - single RED', window, expDurations, startingPositions, yCenter, fade_text, stimulusSize, mixRedGreen([red_i; green_i], fade_stimulus), 0, zeros(size(expDurations, 2), expTrials, 4), {'RED letter?'}, '_results_indistinct_single_red', testNumber, expTrials, greyVal, 0, 0);
     results_indistinct_single_green = runTrials('Indistinct - single GREEN', window, expDurations, startingPositions, yCenter, fade_text, stimulusSize, mixRedGreen([green_i; red_i], fade_stimulus), 0, zeros(size(expDurations, 2), expTrials, 4), {'GREEN letter?'}, '_results_indistinct_single_green', testNumber, expTrials, greyVal, 0, 0);
@@ -93,7 +94,7 @@ if redFirst
     results_indistinct_whole_red_green = runTrials('Indistinct - whole RED-GREEN', window, expDurations, startingPositions, yCenter, fade_text, stimulusSize, mixRedGreen([red_i; green_i], fade_stimulus), 1, zeros(size(expDurations, 2), expTrials, 7), {'RED letter?', 'GREEN letter?'}, '_results_indistinct_whole_red_green', testNumber, expTrials, greyVal, 1, 0);
     results_indistinct_whole_green_red = runTrials('Indistinct - whole GREEN-RED', window, expDurations, startingPositions, yCenter, fade_text, stimulusSize, mixRedGreen([green_i; red_i], fade_stimulus), 1, zeros(size(expDurations, 2), expTrials, 7), {'GREEN letter?', 'RED letter?'}, '_results_indistinct_whole_green_red', testNumber, expTrials, greyVal, 1, 0);
 else
-    results_training_distinct_whole_green_red = training('TRAINING: Distinct GREEN-RED', window, trainingExpDurations, startingPositions, yCenter, fade_text, stimulusSize, [green_d; red_d], 1, zeros(size(expDurations, 2), expTrials, 7), {'GREEN letter?', 'RED letter?'}, '_results_training_distinct_whole_green_red', testNumber, expTrials, greyVal, 1, 1);
+    results_training_distinct_whole_green_red = training('TRAINING\n\nDistinct whole GREEN-RED', window, trainingExpDurations, startingPositions, yCenter, fade_text, stimulusSize, [green_d; red_d], 1, zeros(size(expDurations, 2), expTrials, 7), {'GREEN letter?', 'RED letter?'}, '_results_training_distinct_whole_green_red', testNumber, expTrials, greyVal, 1, 1);
     
     results_distinct_single_green = runTrials('Distinct - single GREEN', window, expDurations, startingPositions, yCenter, fade_text, stimulusSize, [green_d; red_d], 0, zeros(size(expDurations, 2), expTrials, 4), {'GREEN letter?'}, '_results_distinct_single_green', testNumber, expTrials, greyVal, 0, 0);
     results_distinct_single_red = runTrials('Distinct - single RED', window, expDurations, startingPositions, yCenter, fade_text, stimulusSize, [red_d; green_d], 0, zeros(size(expDurations, 2), expTrials, 4), {'RED letter?'}, '_results_distinct_single_red', testNumber, expTrials, greyVal, 0, 0);
@@ -102,7 +103,7 @@ else
     results_distinct_whole_green_red = runTrials('Distinct - whole GREEN-RED', window, expDurations, startingPositions, yCenter, fade_text, stimulusSize, [green_d; red_d], 1, zeros(size(expDurations, 2), expTrials, 7), {'GREEN letter?', 'RED letter?'}, '_results_distinct_whole_green_red', testNumber, expTrials, greyVal, 1, 0);
     results_distinct_whole_red_green = runTrials('Distinct - whole RED-GREEN', window, expDurations, startingPositions, yCenter, fade_text, stimulusSize, [red_d; green_d], 1, zeros(size(expDurations, 2), expTrials, 7), {'RED letter?', 'GREEN letter?'}, '_results_distinct_whole_red_green', testNumber, expTrials, greyVal, 1, 0);
     
-    results_training_indistinct_whole_green_red = training('TRAINING: Indistinct GREEN-RED', window, trainingExpDurations, startingPositions, yCenter, fade_text, stimulusSize, mixRedGreen([green_i; red_i], fade_stimulus), 1, zeros(size(expDurations, 2), expTrials, 7), {'GREEN letter?', 'RED letter?'}, '_results_training_indistinct_whole_green_red', testNumber, expTrials, greyVal, 1, 1);
+    results_training_indistinct_whole_green_red = training('TRAINING\n\nIndistinct whole GREEN-RED', window, trainingExpDurations, startingPositions, yCenter, fade_text, stimulusSize, mixRedGreen([green_i; red_i], fade_stimulus), 1, zeros(size(expDurations, 2), expTrials, 7), {'GREEN letter?', 'RED letter?'}, '_results_training_indistinct_whole_green_red', testNumber, expTrials, greyVal, 1, 1);
     
     results_indistinct_single_green = runTrials('Indistinct - single GREEN', window, expDurations, startingPositions, yCenter, fade_text, stimulusSize, mixRedGreen([green_i; red_i], fade_stimulus), 0, zeros(size(expDurations, 2), expTrials, 4), {'GREEN letter?'}, '_results_indistinct_single_green', testNumber, expTrials, greyVal, 0, 0);
     results_indistinct_single_red = runTrials('Indistinct - single RED', window, expDurations, startingPositions, yCenter, fade_text, stimulusSize, mixRedGreen([red_i; green_i], fade_stimulus), 0, zeros(size(expDurations, 2), expTrials, 4), {'RED letter?'}, '_results_indistinct_single_red', testNumber, expTrials, greyVal, 0, 0);
@@ -250,7 +251,7 @@ end
 return
 end
 
-function results = training(introMsg, window, expDurations, startingPositions, yCenter, fade_text, stimulusSize, stimulusColors, answerBoth, results, questions, saveName, testNumber, expTrials, greyVal, twoColors, giveFeedback)
+function results = training(introMsg, window, expDurations, startingPositions, yCenter, fade_text, stimulusSize, stimulusColors, answerBoth, results, questions, saveName, testNumber, expTrials, greyVal, twoColors, giveFeedback, trainingGoalMsg)
 global stopProgram;
 global redFirst;
 if ~stopProgram
@@ -278,8 +279,8 @@ if ~stopProgram
     
     KbQueueStart();
     Screen('TextSize', window, trainingInfoSize);
-    DrawFormattedText(window, introMsg, 'center', yCenter*0.6, white*fade_text);
-    DrawFormattedText(window, 'Hello and welcome to the training session.\nOn the following screens, you can press\nENTER to continue.', 'center', yCenter*1.4, white*fade_text);
+    DrawFormattedText(window, 'Hello and welcome to the training session.', 'center', yCenter*0.9, white*fade_text);
+    DrawFormattedText(window, 'On the following screens, you can press\nENTER to continue.', 'center', yCenter*1.1, white*fade_text);
     Screen('Flip', window);
     getKeys([KbName('return')], 0);
     KbQueueStop();
@@ -311,7 +312,7 @@ if ~stopProgram
     KbQueueStart();
     Screen('TextSize', window, trainingInfoSize);
     DrawFormattedText(window, 'But whether red/green is left/right\nis random each time!', 'center', yCenter*0.6, white*fade_text);
-    DrawFormattedText(window, 'In this test, the goal is to identify\nboth letters in the correct order', 'center', yCenter*1.4, white*fade_text);
+    DrawFormattedText(window, trainingGoalMsg, 'center', yCenter*1.4, white*fade_text);
     Screen('TextSize', window, 50);
     DrawFormattedText(window, focusChar, 'center', 'center', focusCharColor);
     Screen('TextSize', window, stimulusSize);
@@ -323,10 +324,8 @@ if ~stopProgram
     
     KbQueueStart();
     Screen('TextSize', window, 50);
-    DrawFormattedText(window, 'You can tell the order from the name of the test:', 'center', yCenter*0.6, white*fade_text);
-    DrawFormattedText(window, 'If it says RED              , report ONLY the red letter\nIf it says GREEN     , report ONLY the green letter\nIf it says RED-GREEN, report red first, then green\nIf it says GREEN-RED, report green first, then red', 'center', yCenter*1.4, white*fade_text);
-    Screen('TextSize', window, trainingInfoSize);
-    DrawFormattedText(window, introMsg, 'center', 'center', white*fade_text);
+    DrawFormattedText(window, 'You can tell the order from the name of the test:', 'center', yCenter*0.9, white*fade_text);
+    DrawFormattedText(window, 'If it says RED              , report ONLY the red letter\nIf it says GREEN     , report ONLY the green letter\nIf it says RED-GREEN, report red first, then green\nIf it says GREEN-RED, report green first, then red', 'center', yCenter*1.1, white*fade_text);
     Screen('Flip', window);
     getKeys([KbName('return')], 0);
     KbQueueStop();
