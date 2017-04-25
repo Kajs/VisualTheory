@@ -1,9 +1,10 @@
+clearvars;
 testNumber = '005';
-redFirst = 0;
+redFirst = 1;
 if redFirst
-    strcat('redFirst/', testNumber);
+    testNumber = strcat('redFirst/', testNumber);
 else
-    strcat('greenFirst/', testNumber);
+    testNumber = strcat('greenFirst/', testNumber);
 end
 
 d_s_r = 'results_distinct_single_red';
