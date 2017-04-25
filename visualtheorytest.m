@@ -31,7 +31,7 @@ PsychDefaultSetup(2);
 screens = Screen('Screens');
 screenNumber = max(screens);
 
-% Define COLORS
+% Define COLORSexpduration
 fade_text = 0.4;
 %indistinct_maxValue = 0.7275;
 indistinct_maxValue = 1.0;
@@ -53,12 +53,14 @@ hz=Screen('NominalFrameRate', window);
 expStep = 1.0/hz;
 expFraction = 0.1;
 
-exp1 = 2.0 * expStep - (expStep * expFraction);
-exp2 = 3.0 * expStep - (expStep * expFraction);
-exp3 = 4.0 * expStep - (expStep * expFraction);
-exp4 = 5.0 * expStep - (expStep * expFraction);
-exp5 = 6.0 * expStep - (expStep * expFraction);
-exp6 = 7.0 * expStep - (expStep * expFraction);
+global expFlipSafetyDuration;
+expFlipSafetyDuration = (expStep * expFraction);
+exp1 = 2.0 * expStep;
+exp2 = 3.0 * expStep;
+exp3 = 4.0 * expStep;
+exp4 = 5.0 * expStep;
+exp5 = 6.0 * expStep;
+exp6 = 7.0 * expStep;
 expDurations = [exp6 exp5 exp4 exp3 exp2 exp1];
 trainingExpDurations = [exp6, exp4];
 %expDurations = [exp6];
@@ -73,7 +75,7 @@ stopProgram = 0;
 %function results = runTrials(introMsg, window, expDurations, startingPositions, yCenter, fade_text, stimulusSize, stimulusColors, answerBoth, results, questions, saveName, testNumber, expTrials, greyVal)
 
 if redFirst
-    results_training_distinct_whole_red_green = training('TRAINING: Distinct RED-GREEN', window, trainingExpDurations, startingPositions, yCenter, fade_text, stimulusSize, [red_d; green_d], 1, zeros(size(expDurations, 2), expTrials, 7), {'RED letter?', 'GREEN letter?'}, '_results_training_distinct_whole_red_green', testNumber, expTrials, greyVal, 1, 1);
+    %results_training_distinct_whole_red_green = training('TRAINING: Distinct RED-GREEN', window, trainingExpDurations, startingPositions, yCenter, fade_text, stimulusSize, [red_d; green_d], 1, zeros(size(expDurations, 2), expTrials, 7), {'RED letter?', 'GREEN letter?'}, '_results_training_distinct_whole_red_green', testNumber, expTrials, greyVal, 1, 1);
     
     results_distinct_single_red = runTrials('Distinct - single RED', window, expDurations, startingPositions, yCenter, fade_text, stimulusSize, [red_d; green_d], 0, zeros(size(expDurations, 2), expTrials, 4), {'RED letter?'}, '_results_distinct_single_red', testNumber, expTrials, greyVal, 0, 0);
     results_distinct_single_green = runTrials('Distinct - single GREEN', window, expDurations, startingPositions, yCenter, fade_text, stimulusSize, [green_d; red_d], 0, zeros(size(expDurations, 2), expTrials, 4), {'GREEN letter?'}, '_results_distinct_single_green', testNumber, expTrials, greyVal, 0, 0);
@@ -369,6 +371,7 @@ end
 function results = runTrials(introMsg, window, expDurations, startingPositions, yCenter, fade_text, stimulusSize, stimulusColors, answerBoth, results, questions, saveName, testNumber, expTrials, greyVal, twoColors, giveFeedback)
 global stopProgram;
 global redFirst;
+global expFlipSafetyDuration;
 white = [1 1 1];
 if ~stopProgram
     showTrialInformation(introMsg, window, yCenter*1.4, white*fade_text);
@@ -403,7 +406,7 @@ for e = 1:size(expDurations, 2)
         maskImg = generateMask(maskSymbols, stimulusColors, maskFontSize, letterBoxX, letterBoxY, greyVal);
         
         sequencePos = t + (e-1) * expTrials;
-        expduration = trialSequence(sequencePos, 5);
+        expduration = trialSequence(sequencePos, 5) - expFlipSafetyDuration;
         L1 = letters(trialSequence(sequencePos, 1));
         P1 = trialSequence(sequencePos, 3);
         C1 = stimulusColors(1, :);
@@ -447,7 +450,7 @@ for e = 1:size(expDurations, 2)
         end
         KbQueueStop();
         
-        results(e, t, 1) = expduration; %exposure duration
+        results(e, t, 1) = trialSequence(sequencePos, 5); %exposure duration
         results(e, t, 2) = lower(L1); %stimulus 1
         results(e, t, 3) = key1; %answer 1
         results(e, t, 4) = time1 - time_start; %response time 1
