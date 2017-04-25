@@ -1,4 +1,10 @@
-testNumber = '004';
+testNumber = '005';
+redFirst = 0;
+if redFirst
+    strcat('redFirst/', testNumber);
+else
+    strcat('greenFirst/', testNumber);
+end
 
 d_s_r = 'results_distinct_single_red';
 d_s_g = 'results_distinct_single_green';
