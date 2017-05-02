@@ -504,10 +504,12 @@ for e = 1:size(expDurations, 2)
     end
 end
 
-if redFirst
-    save(strcat('data/redFirst/', testNumber, saveName), 'results');
-else
-    save(strcat('data/greenFirst/', testNumber, saveName), 'results');
+if ~stopProgram
+    if redFirst
+        save(strcat('data/redFirst/', testNumber, saveName), 'results');
+    else
+        save(strcat('data/greenFirst/', testNumber, saveName), 'results');
+    end
 end
 return
 end
