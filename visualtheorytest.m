@@ -4,9 +4,9 @@ clearvars;
 sca;
 KbName('UnifyKeyNames');
 
-testNumber = '001';
+testNumber = '002';
 global redFirst;
-redFirst = 0;
+redFirst = 1;
 expTrials = 20;           %number of trials per exposure duration, must be EVEN number
 
 %screenDiag = 31.75; %LAPTOP diagonal in cm
@@ -50,6 +50,7 @@ left = xCenter - letterDisplacement/cmPerPixel - stimulusPositionCorrection;
 right = xCenter + letterDisplacement/cmPerPixel - stimulusPositionCorrection;
 startingPositions = [left right];
 hz=Screen('NominalFrameRate', window);
+global expStep;
 expStep = 1.0/hz;
 expFraction = 0.1;
 
@@ -204,14 +205,17 @@ return
 end
 
 function vbl = showTrialInformation(message, window, position, color)
+global expFlipSafetyDuration;
 ifi = Screen('GetFlipInterval', window);
+msgFlipTime = ifi*2.0 - expFlipSafetyDuration;
+
 KbQueueStart();
 Screen('TextSize', window, 80);
 DrawFormattedText(window, message, 'center', 'center', color);
 Screen('TextSize', window, 70);
 DrawFormattedText(window, 'Press ENTER to continue', 'center', position, color);
 vbl = GetSecs();
-vbl = Screen('Flip', window, vbl + ifi*0.75);
+vbl = Screen('Flip', window, vbl + msgFlipTime);
 
 getKeys([KbName('return')], 0);
 KbQueueStop();
@@ -223,20 +227,18 @@ if waitduration > 0
     [key, time] = getKeys(acceptedKeys, waitduration);
     if time > 0; return; end
 end
+global expFlipSafetyDuration;
 ifi = Screen('GetFlipInterval', window);
+msgFlipTime = ifi*2.0 - expFlipSafetyDuration;
+
 vbl = GetSecs();
-vbl = Screen('Flip', window, vbl + ifi*0.75);
+vbl = Screen('Flip', window, vbl + msgFlipTime);
 Screen('TextSize', window, messageSize);
 DrawFormattedText(window, questionText, 'center', 'center', [1 1 1]*fade_text);
-Screen('Flip', window, vbl + ifi*0.75);
+Screen('Flip', window, vbl + msgFlipTime);
 
 [key, time] = getKeys(acceptedKeys, 0);
 return;
-end
-
-function drawFocusChar(window, focusChar, focusCharColor)
-Screen('TextSize', window, 50);
-DrawFormattedText(window, focusChar, 'center', 'center', focusCharColor);
 end
 
 function [key, time] = getKeys(acceptedKeys, maxWait)
@@ -271,7 +273,10 @@ end
 
 function results = training(introMsg, window, expDurations, startingPositions, yCenter, fade_text, stimulusSize, stimulusColors, answerBoth, results, questions, saveName, testNumber, expTrials, greyVal, twoColors, giveFeedback, trainingGoalMsg)
 global stopProgram;
-global redFirst;
+global expFlipSafetyDuration;
+ifi = Screen('GetFlipInterval', window);
+msgFlipTime = ifi*2.0 - expFlipSafetyDuration;
+
 if ~stopProgram
     white = [1 1 1];
     letters = ['A' 'E' 'I' 'O' 'U'];
@@ -299,7 +304,8 @@ if ~stopProgram
     Screen('TextSize', window, trainingInfoSize);
     DrawFormattedText(window, 'Hello and welcome to the training session.', 'center', yCenter*0.9, white*fade_text);
     DrawFormattedText(window, 'On the following screens, you can press\nENTER to continue.', 'center', yCenter*1.1, white*fade_text);
-    Screen('Flip', window);
+    vbl = GetSecs();
+    Screen('Flip', window, vbl + msgFlipTime);
     getKeys([KbName('return')], 0);
     KbQueueStop();
 
@@ -309,7 +315,8 @@ if ~stopProgram
     DrawFormattedText(window, 'During the session, you need to\nlook directly at it.', 'center', yCenter*1.4, white*fade_text);
     Screen('TextSize', window, 50);
     DrawFormattedText(window, focusChar, 'center', 'center', focusCharColor);
-    Screen('Flip', window);
+    vbl = GetSecs();
+    Screen('Flip', window, vbl + msgFlipTime);
     getKeys([KbName('return')], 0);
     KbQueueStop();
 
@@ -323,7 +330,8 @@ if ~stopProgram
     randomLetters = letters(randperm(size(letters, 2)));
     DrawFormattedText(window, randomLetters(1), left, 'center', stimulusColors(1, :));
     DrawFormattedText(window, randomLetters(2), right, 'center', stimulusColors(2, :));
-    Screen('Flip', window);
+    vbl = GetSecs();
+    Screen('Flip', window, vbl + msgFlipTime);
     getKeys([KbName('return')], 0);
     KbQueueStop();
 
@@ -336,7 +344,8 @@ if ~stopProgram
     Screen('TextSize', window, stimulusSize);
     DrawFormattedText(window, randomLetters(3), right, 'center', stimulusColors(1, :));
     DrawFormattedText(window, randomLetters(4), left, 'center', stimulusColors(2, :));
-    Screen('Flip', window);
+    vbl = GetSecs();
+    Screen('Flip', window, vbl + msgFlipTime);
     getKeys([KbName('return')], 0);
     KbQueueStop();
     
@@ -344,7 +353,8 @@ if ~stopProgram
     Screen('TextSize', window, 50);
     DrawFormattedText(window, 'You can tell the order from the name of the test:', 'center', yCenter*0.9, white*fade_text);
     DrawFormattedText(window, 'If it says RED              , report ONLY the red letter\nIf it says GREEN     , report ONLY the green letter\nIf it says RED-GREEN, report red first, then green\nIf it says GREEN-RED, report green first, then red', 'center', yCenter*1.1, white*fade_text);
-    Screen('Flip', window);
+    vbl = GetSecs();
+    Screen('Flip', window, vbl + msgFlipTime);
     getKeys([KbName('return')], 0);
     KbQueueStop();
     
@@ -356,7 +366,8 @@ if ~stopProgram
     DrawFormattedText(window, focusChar, 'center', 'center', focusCharColor);
     Screen('DrawTextures', window, textureIndex, [], dstRects1, [], [], [], []);
     Screen('DrawTextures', window, textureIndex, [], dstRects2, [], [], [], []);
-    Screen('Flip', window);
+    vbl = GetSecs();
+    Screen('Flip', window, vbl + msgFlipTime);
     getKeys([KbName('return')], 0);
     KbQueueStop();
     Screen('Close', [textureIndex]);
@@ -367,7 +378,8 @@ if ~stopProgram
     DrawFormattedText(window, 'A E U I O', 'center', yCenter*1.1, stimulusColors(2, :));
     Screen('TextSize', window, trainingInfoSize);
     DrawFormattedText(window, 'This is what the letters look like', 'center', yCenter*0.6, white*fade_text);
-    Screen('Flip', window);
+    vbl = GetSecs();
+    Screen('Flip', window, vbl + msgFlipTime);
     getKeys([KbName('return')], 0);
     KbQueueStop();
     
@@ -377,11 +389,25 @@ if ~stopProgram
     DrawFormattedText(window, 'Ok then, lets start the test!', 'center', yCenter*1.4, white*fade_text);
     Screen('TextSize', window, 50);
     DrawFormattedText(window, focusChar, 'center', 'center', focusCharColor);
-    Screen('Flip', window);
+    vbl = GetSecs();
+    Screen('Flip', window, vbl + msgFlipTime);
     getKeys([KbName('return')], 0);
     KbQueueStop();
+    
+    results = runTrials(introMsg, window, expDurations, startingPositions, yCenter, fade_text, stimulusSize, stimulusColors, answerBoth, results, questions, saveName, testNumber, expTrials, greyVal, twoColors, giveFeedback);
+    
+    if ~stopProgram
+        KbQueueStart();
+        Screen('TextSize', window, trainingInfoSize);
+        DrawFormattedText(window, 'Good work.', 'center', yCenter*0.9, white*fade_text);
+        DrawFormattedText(window, 'Press ENTER to start the test.', 'center', yCenter*1.1, white*fade_text);
+        vbl = GetSecs();
+        Screen('Flip', window, vbl + msgFlipTime);
+        getKeys([KbName('return')], 0);
+        KbQueueStop();
+    end
 end
-results = runTrials(introMsg, window, expDurations, startingPositions, yCenter, fade_text, stimulusSize, stimulusColors, answerBoth, results, questions, saveName, testNumber, expTrials, greyVal, twoColors, giveFeedback);
+
 return
 end
 
@@ -389,6 +415,9 @@ function results = runTrials(introMsg, window, expDurations, startingPositions, 
 global stopProgram;
 global redFirst;
 global expFlipSafetyDuration;
+ifi = Screen('GetFlipInterval', window);
+msgFlipTime = ifi*2.0 - expFlipSafetyDuration;
+
 white = [1 1 1];
 if ~stopProgram
     showTrialInformation(introMsg, window, yCenter*1.4, white*fade_text);
@@ -408,7 +437,7 @@ focusCharColor = fade_text * [1.0 1.0 1.0];
 left = startingPositions(1);
 right = startingPositions(2);
 
-maskSymbols = ['|' '^' '<' '>' '\' '/' '*' '~' '&' '=' '[' ']' '{' '}' '§' '¢' '×' '╬' 'X' '¤' 'Δ' 'љ' 'α' 'ж' 'Д' 'Њ' 'ф'];
+maskSymbols = ['|' '^' '<' '>' '\' '/' '*' '~' '&' '=' '[' ']' '{' '}' '§' '¢' 'x' '╬' 'X' '¤' 'Δ' 'љ' 'α' 'ж' 'Д' 'Њ' 'ф'];
 maskFontSize = 70;
 maskDur = 2.0; 
 
@@ -419,7 +448,6 @@ for e = 1:size(expDurations, 2)
     if(stopProgram); break; end
     for t = 1:expTrials
         if(stopProgram); break; end
-        ifi = Screen('GetFlipInterval', window);
         maskImg = generateMask(maskSymbols, stimulusColors, maskFontSize, letterBoxX, letterBoxY, greyVal);
         
         sequencePos = t + (e-1) * expTrials;
@@ -439,7 +467,7 @@ for e = 1:size(expDurations, 2)
         Screen('TextSize', window, 50);
         vbl = GetSecs();
         DrawFormattedText(window, focusChar, 'center', 'center', focusCharColor);
-        vbl = Screen('Flip', window, vbl + ifi*0.75); %SHOW FOCUS
+        vbl = Screen('Flip', window, vbl + msgFlipTime); %SHOW FOCUS
         DrawFormattedText(window, focusChar, 'center', 'center', focusCharColor);              
         
         Screen('TextSize', window, stimulusSize);
@@ -480,25 +508,34 @@ for e = 1:size(expDurations, 2)
         end
         Screen('Close', [textureIndex]);
         
+        feedback1 = '';
+        feedback2 = '';
+        if answerBoth
+            feedback1 = strcat(feedback1, '1st letter: ');
+            feedback2 = strcat(feedback2, '2nd letter: ');
+        end
         if giveFeedback
             Screen('TextSize', window, stimulusSize);
             if key1 == lower(L1)
-                DrawFormattedText(window, '1st letter: Correct!', 'center', yCenter*0.9, white*fade_text);
+                feedback1 = strcat(feedback1, 'Correct!');
             elseif twoColors & key1 == lower(L2);
-                DrawFormattedText(window, '1st letter: Reversed.', 'center', yCenter*0.9, white*fade_text);
+                feedback1 = strcat(feedback1, 'Reversed');
             else
-                DrawFormattedText(window, '1st letter: Incorrect.', 'center', yCenter*0.9, white*fade_text);
+                feedback1 = strcat(feedback1, 'Incorrect!');
             end
+            DrawFormattedText(window, feedback1, 'center', yCenter*0.9, white*fade_text);
             if answerBoth
                 if key2 == lower(L2)
-                    DrawFormattedText(window, '2nd letter: Correct!', 'center', yCenter*1.1, white*fade_text);
+                    feedback2 = strcat(feedback2, 'Correct!');
                 elseif key2 == lower(L1);
-                    DrawFormattedText(window, '2nd letter: Reversed.', 'center', yCenter*1.1, white*fade_text);
+                    feedback2 = strcat(feedback2, 'Reversed');
                 else
-                    DrawFormattedText(window, '2nd letter: Incorrect.', 'center', yCenter*1.1, white*fade_text);
+                    feedback2 = strcat(feedback2, 'Incorrect!');
                 end
-            end
-            vbl = Screen('Flip', window);
+                DrawFormattedText(window, feedback2, 'center', yCenter*1.1, white*fade_text);
+            end          
+            vbl = GetSecs();
+            vbl = Screen('Flip', window, vbl + msgFlipTime);
             Screen('Flip', window, vbl + 1.0);
         end
     end
