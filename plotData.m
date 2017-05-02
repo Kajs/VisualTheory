@@ -1,25 +1,30 @@
 clearvars;
-testNumber = '005';
+testNumber = '001';
 redFirst = 1;
+training = 1;
 if redFirst
     testNumber = strcat('redFirst/', testNumber);
 else
     testNumber = strcat('greenFirst/', testNumber);
 end
 
-d_s_r = 'results_distinct_single_red';
-d_s_g = 'results_distinct_single_green';
-d_p_r = 'results_distinct_partial_red';
-d_p_g = 'results_distinct_partial_green';
-d_w_r = 'results_distinct_whole_red_green';
-d_w_g = 'results_distinct_whole_green_red';
+trainingStr = '';
+if training; trainingStr = 'training_'; end
+    
+d_s_r = strcat('results_', trainingStr, 'distinct_single_red');
+d_s_g = strcat('results_', trainingStr, 'distinct_single_green');
+d_p_r = strcat('results_', trainingStr, 'distinct_partial_red');
+d_p_g = strcat('results_', trainingStr, 'distinct_partial_green');
+d_w_r = strcat('results_', trainingStr, 'distinct_whole_red_green');
+d_w_g = strcat('results_', trainingStr, 'distinct_whole_green_red');
 
-i_s_r = 'results_indistinct_single_red';
-i_s_g = 'results_indistinct_single_green';
-i_p_r = 'results_indistinct_partial_red';
-i_p_g = 'results_indistinct_partial_green';
-i_w_r = 'results_indistinct_whole_red_green';
-i_w_g = 'results_indistinct_whole_green_red';
+i_s_r = strcat('results_', trainingStr, 'indistinct_single_red');
+i_s_g = strcat('results_', trainingStr, 'indistinct_single_green');
+i_p_r = strcat('results_', trainingStr, 'indistinct_partial_red');
+i_p_g = strcat('results_', trainingStr, 'indistinct_partial_green');
+i_w_r = strcat('results_', trainingStr, 'indistinct_whole_red_green');
+i_w_g = strcat('results_', trainingStr, 'indistinct_whole_green_red');
+
 xMin = -0.01;
 xMax = 0.1;
 yMin = -0.01;
@@ -40,6 +45,26 @@ plot_i_p_r = 1;
 plot_i_p_g = 1;
 plot_i_w_r = 1;
 plot_i_w_g = 1;
+
+if training
+    if redFirst
+        plot_d_s_g = 0;
+        plot_d_p_g = 0;
+        plot_d_w_g = 0;
+        
+        plot_i_s_g = 0;
+        plot_i_p_g = 0;
+        plot_i_w_g = 0;
+    else
+        plot_d_s_r = 0;
+        plot_d_p_r = 0;
+        plot_d_w_r = 0;
+        
+        plot_i_s_r = 0;
+        plot_i_p_r = 0;
+        plot_i_w_r = 0;
+    end
+end
 
 %disp(results)
 if plot_d_s_r; [d_s_r_X, d_s_r_Y_1_1] = countResults(testNumber, d_s_r); end
@@ -105,7 +130,7 @@ if plot_d_p_g
     ylim([yMin yMax]);
 end
 
-if plot_d_w_g
+if plot_d_w_r
     subplot(4,6,13);
     scatter(d_w_r_X, d_w_r_Y_1_1, pointSizeOne, 'filled'); hold on;
     scatter(d_w_r_X, d_w_r_Y_1_2, pointSizeTwo, 'filled');
