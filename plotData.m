@@ -12,8 +12,9 @@ else
     testNumber = strcat('greenFirst/', testNumber);
 end
 
-temp = 10000;
-options = optimset('MaxFunEvals',temp, 'MaxIter', temp);
+global maxIter;
+maxIter = 1000000000;
+options = optimset('MaxFunEvals',maxIter, 'MaxIter', maxIter);
 
 trainingStr = '';
 if training; trainingStr = 'training_'; end
@@ -373,24 +374,38 @@ return
 end
 
 function predicted = fitData(xdata, ydata, options, fitX, probabilityFunction)
-    x0 = rand(2,1);
+    global maxIter;
+    x0 = rand(3,1);
+    x0(1, 1) = 150.0;
+    x0(2, 1) = 0.05;
+    x0(3, 1) = 0.0;
     fun = @(x)getR2(x, xdata, ydata, probabilityFunction);
-    fitVars = fminsearch(fun,x0, options);
+    vars = fminsearch(fun,x0, options);
+    %vars = fitFunction(maxIter, fun);
     
-    k = fitVars(1);
-    e0 = fitVars(2);
-    fprintf('e0 = %d, k = %d\n', e0, k);
+    k = vars(1);
+    e0 = vars(2);
+    %if(e0 < 0) e0 = 0; end
+    lapse = vars(3);
+    if (lapse < 0.0) lapse = 0.0; end
+    if (lapse > 1.0) lapse = 1.0; end
+    lapse = 0.0; %LAPSE OFF
+    fprintf('e0 = %d, k = %d, lapse = %d\n', e0, k, lapse);
 
     predicted = zeros(1, size(fitX, 2));
     for i = 1:size(fitX, 2)
-        predicted(i) = probabilityFunction(fitX(i), e0, 1.0, k, 0.2, 0.0);
+        predicted(i) = probabilityFunction(fitX(i), e0, 1.0, k, 0.2, lapse);
     end
 end
 
 function R2 = getR2(vars, xdata, ydata, fun)
     k = vars(1);
     e0 = vars(2);
-    lapse = 0.0;
+    %if(e0 < 0) e0 = 0; end
+    lapse = vars(3);
+    if (lapse < 0.0) lapse = 0.0; end
+    if (lapse > 1.0) lapse = 1.0; end
+    lapse = 0.0; %LAPSE OFF
     m = mean(ydata);
     
     SStot = 0.0;
@@ -407,6 +422,7 @@ function p = probabilityCorrect_single(e, e0, L, k, guess, lapse)
 p0 = logistic(e, e0, L, k);
 delta = 1.0 - p0;
 p = p0 + delta * guess;
+p = p * (1.0 - lapse) + lapse * guess;
 return
 end
 
@@ -418,6 +434,7 @@ p_c2 = logistic(e, e0, L, k);
 p_c12 = (1.0 - (1.0 - p_c1) * (1.0 - p_c2));
 p_c = p_c12 + (1.0 - p_c12) * 0.5;
 p = p_l1 * p_c;
+p = p * (1.0 - lapse) + lapse * guess;
 return
 end
 
@@ -429,6 +446,7 @@ p_c2 = logistic(e, e0, L, k);
 p_c12 = (1.0 - (1.0 - p_c1) * (1.0 - p_c2));
 p_c = p_c12 + (1.0 - p_c12) * 0.5;
 p = p_l2 * (1.0 - p_c);
+p = p * (1.0 - lapse) + lapse * guess;
 return
 end
 
@@ -440,6 +458,7 @@ p_c2 = logistic(e, e0, L, k);
 p_c12 = (1.0 - (1.0 - p_c1) * (1.0 - p_c2));
 p_c = p_c12 + (1.0 - p_c12) * 0.5;
 p = p_l1 * p_l2* p_c;
+p = p * (1.0 - lapse) + lapse * guess;
 return
 end
 
@@ -451,6 +470,7 @@ p_c2 = logistic(e, e0, L, k);
 p_c12 = (1.0 - (1.0 - p_c1) * (1.0 - p_c2));
 p_c = p_c12 + (1.0 - p_c12) * 0.5;
 p = p_l1 * p_l2* (1.0 - p_c);
+p = p * (1.0 - lapse) + lapse * guess;
 return
 end
 
@@ -462,6 +482,7 @@ p_c2 = logistic(e, e0, L, k);
 p_c12 = (1.0 - (1.0 - p_c1) * (1.0 - p_c2));
 p_c = p_c12 + (1.0 - p_c12) * 0.5;
 p = p_l1 * (1.0-p_l2) * p_c;
+p = p * (1.0 - lapse) + lapse * guess;
 return
 end
 
@@ -473,10 +494,102 @@ p_c2 = logistic(e, e0, L, k);
 p_c12 = (1.0 - (1.0 - p_c1) * (1.0 - p_c2));
 p_c = p_c12 + (1.0 - p_c12) * 0.5;
 p = p_l2 * (1.0 - p_l1) * (1.0 - p_c);
+p = p * (1.0 - lapse) + lapse * guess;
 return
 end
 
 function p = logistic(e, e0, L, k)
 p = L/(1.0 + exp(-k*(e-e0)));
 return
+end
+
+function vars = fitFunction(maxIter, R2Fun)
+    k0 = rand(1);
+    e0 = rand(1);
+    l0 = rand(1);
+    r0 = realmax; 
+
+    kN = k0;
+    eN = e0;
+    lN = l0;
+    rN = r0; 
+    
+    for i = 1:maxIter
+        %%% k %%%
+        if rand(1) < 0.5
+            kN = increaseDecrease(k0, realmin, realmax);
+        else
+            kN = multDiv(k0, realmin, realmax);
+        end
+        %%% e %%% 
+        if rand(1) < 0.5
+            eN = increaseDecrease(e0, realmin, realmax);
+        else
+            eN = multDiv(e0, 0.0, realmax);
+        end
+        
+        %%% lapse %%% 
+        if rand(1) < 0.5
+            lN = increaseDecrease(l0, 0.0, 1.0);
+        else
+            lN = multDiv(l0, 0.0, 1.0);
+        end
+        rN = R2Fun([kN eN lN]);
+        if rN < r0
+            %fprintf('k=%d, e0=%d, l=%d, R2 = %d\n', kN, eN, lN, rN);
+            k0 = kN;
+            e0 = eN;
+            l0 = lN;
+            r0 = rN;
+        end
+    end
+    vars = [k0 e0 l0];
+    return
+end
+
+function newVal = increaseDecrease(val, min, max)
+    newVal = val;
+    inc = rand(1).^(1.0/rand(1));
+    if rand(1) < 0.5
+        if rand(1) < 0.5
+            newVal = newVal + inc;
+        else
+            newVal = newVal - inc;
+        end
+    else
+        if rand(1) < 0.5
+            newVal = newVal + rand(1);
+        else
+            newVal = newVal - rand(1);
+        end
+    end
+    if newVal < min | newVal > max
+        newVal = rand(1);
+    end
+    return
+end
+
+function newVal = multDiv(val, min, max)
+    newVal = val;
+    inc = rand(1);
+    if rand(1 < 0.5)
+        if rand(1) < 0.5
+            newVal = newVal * (1.0 + inc);
+        else
+            newVal = newVal * (1.0 - inc);
+        end
+        if newVal < min | newVal > max
+            newVal = val;
+        end
+    else
+        if rand(1) < 0.5
+            newVal = newVal .^ (1.0 + inc);
+        else
+            newVal = newVal .^ (1.0 - inc);
+        end
+        if newVal < min | newVal > max
+            newVal = rand(1);
+        end
+    end
+    return
 end
