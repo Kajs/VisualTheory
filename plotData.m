@@ -91,12 +91,22 @@ if plot_i_p_g; [i_p_g_X, i_p_g_Y_1_1, i_p_g_Y_1_2] = countResults(testNumber, i_
 if plot_i_w_r; [i_w_r_X, i_w_r_Y_1_1, i_w_r_Y_1_2, i_w_r_Y_2_2, i_w_r_Y_2_1, i_w_r_Y_both, i_w_r_Y_none] = countResults(testNumber, i_w_r); end
 if plot_i_w_g; [i_w_g_X, i_w_g_Y_1_1, i_w_g_Y_1_2, i_w_g_Y_2_2, i_w_g_Y_2_1, i_w_g_Y_both, i_w_g_Y_none] = countResults(testNumber, i_w_g); end
 
+fitVars_distinct = fitData_all(options, d_s_r_X, d_s_r_Y_1_1, d_s_g_X, d_s_g_Y_1_1,...
+            d_p_r_X, d_p_r_Y_1_1, d_p_r_Y_1_2, d_p_g_X, d_p_g_Y_1_1, d_p_g_Y_1_2,...
+            d_w_r_X, d_w_r_Y_both, d_w_r_Y_none, d_w_r_Y_1_1, d_w_r_Y_1_2, d_w_r_Y_2_2, d_w_r_Y_2_1,...
+            d_w_g_X, d_w_g_Y_both, d_w_g_Y_none, d_w_g_Y_1_1, d_w_g_Y_1_2, d_w_g_Y_2_2, d_w_g_Y_2_1);
+fitVars_indistinct = fitData_all(options, i_s_r_X, i_s_r_Y_1_1, i_s_g_X, i_s_g_Y_1_1,...
+            i_p_r_X, i_p_r_Y_1_1, i_p_r_Y_1_2, i_p_g_X, i_p_g_Y_1_1, i_p_g_Y_1_2,...
+            i_w_r_X, i_w_r_Y_both, i_w_r_Y_none, i_w_r_Y_1_1, i_w_r_Y_1_2, i_w_r_Y_2_2, i_w_r_Y_2_1,...
+            i_w_g_X, i_w_g_Y_both, i_w_g_Y_none, i_w_g_Y_1_1, i_w_g_Y_1_2, i_w_g_Y_2_2, i_w_g_Y_2_1);
+
 figure
 %DISTINCT
 if plot_d_s_r
     subplot(4,6,1);
     scatter(d_s_r_X, d_s_r_Y_1_1, pointSizeOne, color_correct, 'filled'); hold on;
-    plot(fitX, fitData(d_s_r_X, d_s_r_Y_1_1, options, fitX, @probabilityCorrect_single), color_correct);
+    %plot(fitX, fitData(d_s_r_X, d_s_r_Y_1_1, options, fitX, @probabilityCorrect_single), color_correct);
+    plot(fitX, genYpoints(fitX, fitVars_distinct, @probabilityCorrect_single), color_correct);
     title('D-S-R');
     xlim([xMin xMax]);
     ylim([yMin yMax]);
@@ -105,7 +115,8 @@ end
 if plot_d_s_g
     subplot(4,6,3);
     scatter(d_s_g_X, d_s_g_Y_1_1, pointSizeOne, color_correct, 'filled'); hold on; 
-    plot (fitX, fitData(d_s_g_X, d_s_g_Y_1_1, options, fitX, @probabilityCorrect_single), color_correct);
+    %plot (fitX, fitData(d_s_g_X, d_s_g_Y_1_1, options, fitX, @probabilityCorrect_single), color_correct);
+    plot(fitX, genYpoints(fitX, fitVars_distinct, @probabilityCorrect_single), color_correct);
     title('D-S-G');
     xlim([xMin xMax]);
     ylim([yMin yMax]);
@@ -115,8 +126,10 @@ if plot_d_p_r
     subplot(4,6,7);
     scatter(d_p_r_X, d_p_r_Y_1_1, pointSizeOne, color_correct, 'filled'); hold on;
     scatter(d_p_r_X, d_p_r_Y_1_2, pointSizeTwo, color_reversed, 'filled');
-    plot(fitX, fitData(d_p_r_X, d_p_r_Y_1_1, options, fitX, @probabilityCorrect_partial), color_correct); 
-    plot(fitX, fitData(d_p_r_X, d_p_r_Y_1_2, options, fitX, @probabilityCorrect_partial_r), color_reversed);
+    %plot(fitX, fitData(d_p_r_X, d_p_r_Y_1_1, options, fitX, @probabilityCorrect_partial), color_correct);
+    %plot(fitX, fitData(d_p_r_X, d_p_r_Y_1_2, options, fitX, @probabilityCorrect_partial_r), color_reversed);
+    plot(fitX, genYpoints(fitX, fitVars_distinct, @probabilityCorrect_partial), color_correct);
+    plot(fitX, genYpoints(fitX, fitVars_distinct, @probabilityCorrect_partial_r), color_reversed);
     title('D-P-R');
     xlim([xMin xMax]);
     ylim([yMin yMax]);
@@ -126,8 +139,10 @@ if plot_d_p_g
     subplot(4,6,9);
     scatter(d_p_g_X, d_p_g_Y_1_1, pointSizeOne, color_correct, 'filled'); hold on;
     scatter(d_p_g_X, d_p_g_Y_1_2, pointSizeTwo, color_reversed, 'filled');
-    plot(fitX, fitData(d_p_g_X, d_p_g_Y_1_1, options, fitX, @probabilityCorrect_partial), color_correct); 
-    plot(fitX, fitData(d_p_g_X, d_p_g_Y_1_2, options, fitX, @probabilityCorrect_partial_r), color_reversed);
+    %plot(fitX, fitData(d_p_g_X, d_p_g_Y_1_1, options, fitX, @probabilityCorrect_partial), color_correct); 
+    %plot(fitX, fitData(d_p_g_X, d_p_g_Y_1_2, options, fitX, @probabilityCorrect_partial_r), color_reversed);
+    plot(fitX, genYpoints(fitX, fitVars_distinct, @probabilityCorrect_partial), color_correct);
+    plot(fitX, genYpoints(fitX, fitVars_distinct, @probabilityCorrect_partial_r), color_reversed);
     title('D-P-G');
     xlim([xMin xMax]);
     ylim([yMin yMax]);
@@ -137,8 +152,10 @@ if plot_d_w_r
     subplot(4,6,13);
     scatter(d_w_r_X, d_w_r_Y_1_1, pointSizeOne, color_correct, 'filled'); hold on;
     scatter(d_w_r_X, d_w_r_Y_1_2, pointSizeTwo, color_reversed, 'filled');
-    plot(fitX, fitData(d_w_r_X, d_w_r_Y_1_1, options, fitX, @probabilityCorrect_whole_one), color_correct); 
-    plot(fitX, fitData(d_w_r_X, d_w_r_Y_1_2, options, fitX, @probabilityCorrect_whole_one_r), color_reversed); 
+    %plot(fitX, fitData(d_w_r_X, d_w_r_Y_1_1, options, fitX, @probabilityCorrect_whole_one), color_correct); 
+    %plot(fitX, fitData(d_w_r_X, d_w_r_Y_1_2, options, fitX, @probabilityCorrect_whole_one_r), color_reversed); 
+    plot(fitX, genYpoints(fitX, fitVars_distinct, @probabilityCorrect_whole_one), color_correct);
+    plot(fitX, genYpoints(fitX, fitVars_distinct, @probabilityCorrect_whole_one_r), color_reversed);
     title('D-W-R-G');
     xlim([xMin xMax]);
     ylim([yMin yMax]);
@@ -146,8 +163,10 @@ if plot_d_w_r
     subplot(4,6,14);
     scatter(d_w_r_X, d_w_r_Y_both, pointSizeOne, color_correct, 'filled'); hold on;
     scatter(d_w_r_X, d_w_r_Y_none, pointSizeTwo, color_reversed, 'filled');  
-    plot(fitX, fitData(d_w_r_X, d_w_r_Y_both, options, fitX, @probabilityCorrect_whole_both), color_correct); 
-    plot(fitX, fitData(d_w_r_X, d_w_r_Y_none, options, fitX, @probabilityCorrect_whole_both_r), color_reversed); 
+    %plot(fitX, fitData(d_w_r_X, d_w_r_Y_both, options, fitX, @probabilityCorrect_whole_both), color_correct); 
+    %plot(fitX, fitData(d_w_r_X, d_w_r_Y_none, options, fitX, @probabilityCorrect_whole_both_r), color_reversed); 
+    plot(fitX, genYpoints(fitX, fitVars_distinct, @probabilityCorrect_whole_both), color_correct);
+    plot(fitX, genYpoints(fitX, fitVars_distinct, @probabilityCorrect_whole_both_r), color_reversed);
     title('D-W-R-G');
     xlim([xMin xMax]);
     ylim([yMin yMax]);
@@ -155,8 +174,10 @@ if plot_d_w_r
     subplot(4,6,15);
     scatter(d_w_r_X, d_w_r_Y_2_2, pointSizeOne, color_correct, 'filled'); hold on;
     scatter(d_w_r_X, d_w_r_Y_2_1, pointSizeTwo, color_reversed, 'filled');
-    plot(fitX, fitData(d_w_r_X, d_w_r_Y_2_2, options, fitX, @probabilityCorrect_whole_one), color_correct); 
-    plot(fitX, fitData(d_w_r_X, d_w_r_Y_2_1, options, fitX, @probabilityCorrect_whole_one_r), color_reversed); 
+    %plot(fitX, fitData(d_w_r_X, d_w_r_Y_2_2, options, fitX, @probabilityCorrect_whole_one), color_correct); 
+    %plot(fitX, fitData(d_w_r_X, d_w_r_Y_2_1, options, fitX, @probabilityCorrect_whole_one_r), color_reversed); 
+    plot(fitX, genYpoints(fitX, fitVars_distinct, @probabilityCorrect_whole_one), color_correct);
+    plot(fitX, genYpoints(fitX, fitVars_distinct, @probabilityCorrect_whole_one_r), color_reversed);
     title('D-W-R-G');
     xlim([xMin xMax]);
     ylim([yMin yMax]);
@@ -166,8 +187,10 @@ if plot_d_w_g
     subplot(4,6,19);
     scatter(d_w_g_X, d_w_g_Y_1_1, pointSizeOne, color_correct, 'filled'); hold on;
     scatter(d_w_g_X, d_w_g_Y_1_2, pointSizeTwo, color_reversed, 'filled');
-    plot(fitX, fitData(d_w_g_X, d_w_g_Y_1_1, options, fitX, @probabilityCorrect_whole_one), color_correct); 
-    plot(fitX, fitData(d_w_g_X, d_w_g_Y_1_2, options, fitX, @probabilityCorrect_whole_one_r), color_reversed); 
+    %plot(fitX, fitData(d_w_g_X, d_w_g_Y_1_1, options, fitX, @probabilityCorrect_whole_one), color_correct); 
+    %plot(fitX, fitData(d_w_g_X, d_w_g_Y_1_2, options, fitX, @probabilityCorrect_whole_one_r), color_reversed); 
+    plot(fitX, genYpoints(fitX, fitVars_distinct, @probabilityCorrect_whole_one), color_correct);
+    plot(fitX, genYpoints(fitX, fitVars_distinct, @probabilityCorrect_whole_one_r), color_reversed);
     title('D-W-G-R');
     xlim([xMin xMax]);
     ylim([yMin yMax]);
@@ -175,8 +198,10 @@ if plot_d_w_g
     subplot(4,6,20);
     scatter(d_w_g_X, d_w_g_Y_both, pointSizeOne, color_correct, 'filled'); hold on;
     scatter(d_w_g_X, d_w_g_Y_none, pointSizeTwo, color_reversed, 'filled');
-    plot(fitX, fitData(d_w_g_X, d_w_g_Y_both, options, fitX, @probabilityCorrect_whole_both), color_correct); 
-    plot(fitX, fitData(d_w_g_X, d_w_g_Y_none, options, fitX, @probabilityCorrect_whole_both_r), color_reversed); 
+    %plot(fitX, fitData(d_w_g_X, d_w_g_Y_both, options, fitX, @probabilityCorrect_whole_both), color_correct); 
+    %plot(fitX, fitData(d_w_g_X, d_w_g_Y_none, options, fitX, @probabilityCorrect_whole_both_r), color_reversed); 
+    plot(fitX, genYpoints(fitX, fitVars_distinct, @probabilityCorrect_whole_both), color_correct);
+    plot(fitX, genYpoints(fitX, fitVars_distinct, @probabilityCorrect_whole_both_r), color_reversed);
     title('D-W-G-R');
     xlim([xMin xMax]);
     ylim([yMin yMax]);
@@ -184,8 +209,10 @@ if plot_d_w_g
     subplot(4,6,21);
     scatter(d_w_g_X, d_w_g_Y_2_2, pointSizeOne, color_correct, 'filled'); hold on;
     scatter(d_w_g_X, d_w_g_Y_2_1, pointSizeTwo, color_reversed, 'filled');
-    plot(fitX, fitData(d_w_g_X, d_w_g_Y_2_2, options, fitX, @probabilityCorrect_whole_one), color_correct); 
-    plot(fitX, fitData(d_w_g_X, d_w_g_Y_2_1, options, fitX, @probabilityCorrect_whole_one_r), color_reversed); 
+    %plot(fitX, fitData(d_w_g_X, d_w_g_Y_2_2, options, fitX, @probabilityCorrect_whole_one), color_correct); 
+    %plot(fitX, fitData(d_w_g_X, d_w_g_Y_2_1, options, fitX, @probabilityCorrect_whole_one_r), color_reversed); 
+    plot(fitX, genYpoints(fitX, fitVars_distinct, @probabilityCorrect_whole_one), color_correct);
+    plot(fitX, genYpoints(fitX, fitVars_distinct, @probabilityCorrect_whole_one_r), color_reversed);
     title('D-W-G-R');
     xlim([xMin xMax]);
     ylim([yMin yMax]);
@@ -195,7 +222,8 @@ end
 if plot_i_s_r
     subplot(4,6,4);
     scatter(i_s_r_X, i_s_r_Y_1_1, pointSizeOne, color_correct, 'filled'); hold on;
-    plot(fitX, fitData(i_s_r_X, i_s_r_Y_1_1, options, fitX, @probabilityCorrect_single), color_correct);
+    %plot(fitX, fitData(i_s_r_X, i_s_r_Y_1_1, options, fitX, @probabilityCorrect_single), color_correct);
+    plot(fitX, genYpoints(fitX, fitVars_indistinct, @probabilityCorrect_single), color_correct);
     title('I-S-R');
     xlim([xMin xMax]);
     ylim([yMin yMax]);
@@ -204,7 +232,8 @@ end
 if plot_i_s_g
     subplot(4,6,6);
     scatter(i_s_g_X, i_s_g_Y_1_1, pointSizeOne, color_correct, 'filled'); hold on;
-    plot(fitX, fitData(i_s_g_X, i_s_g_Y_1_1, options, fitX, @probabilityCorrect_single), color_correct);
+    %plot(fitX, fitData(i_s_g_X, i_s_g_Y_1_1, options, fitX, @probabilityCorrect_single), color_correct);
+    plot(fitX, genYpoints(fitX, fitVars_indistinct, @probabilityCorrect_single), color_correct);
     title('I-S-G');
     xlim([xMin xMax]);
     ylim([yMin yMax]);
@@ -214,8 +243,10 @@ if plot_i_p_r
     subplot(4,6,10);
     scatter(i_p_r_X, i_p_r_Y_1_1, pointSizeOne, color_correct, 'filled'); hold on;
     scatter(i_p_r_X, i_p_r_Y_1_2, pointSizeTwo, color_reversed, 'filled');
-    plot(fitX, fitData(i_p_r_X, i_p_r_Y_1_1, options, fitX, @probabilityCorrect_partial), color_correct); 
-    plot(fitX, fitData(i_p_r_X, i_p_r_Y_1_2, options, fitX, @probabilityCorrect_partial_r), color_reversed);
+    %plot(fitX, fitData(i_p_r_X, i_p_r_Y_1_1, options, fitX, @probabilityCorrect_partial), color_correct); 
+    %plot(fitX, fitData(i_p_r_X, i_p_r_Y_1_2, options, fitX, @probabilityCorrect_partial_r), color_reversed);
+    plot(fitX, genYpoints(fitX, fitVars_indistinct, @probabilityCorrect_partial), color_correct);
+    plot(fitX, genYpoints(fitX, fitVars_indistinct, @probabilityCorrect_partial_r), color_reversed);
     title('I-P-R');
     xlim([xMin xMax]);
     ylim([yMin yMax]);
@@ -225,8 +256,10 @@ if plot_i_p_g
     subplot(4,6,12);
     scatter(i_p_g_X, i_p_g_Y_1_1, pointSizeOne, color_correct, 'filled'); hold on;
     scatter(i_p_g_X, i_p_g_Y_1_2, pointSizeTwo, color_reversed, 'filled');
-    plot(fitX, fitData(i_p_g_X, i_p_g_Y_1_1, options, fitX, @probabilityCorrect_partial), color_correct); 
-    plot(fitX, fitData(i_p_g_X, i_p_g_Y_1_2, options, fitX, @probabilityCorrect_partial_r), color_reversed);
+    %plot(fitX, fitData(i_p_g_X, i_p_g_Y_1_1, options, fitX, @probabilityCorrect_partial), color_correct); 
+    %plot(fitX, fitData(i_p_g_X, i_p_g_Y_1_2, options, fitX, @probabilityCorrect_partial_r), color_reversed);
+    plot(fitX, genYpoints(fitX, fitVars_indistinct, @probabilityCorrect_partial), color_correct);
+    plot(fitX, genYpoints(fitX, fitVars_indistinct, @probabilityCorrect_partial_r), color_reversed);
     title('I-P-G');
     xlim([xMin xMax]);
     ylim([yMin yMax]);
@@ -236,8 +269,10 @@ if plot_i_w_r
     subplot(4,6,16);
     scatter(i_w_r_X, i_w_r_Y_1_1, pointSizeOne, color_correct, 'filled'); hold on;
     scatter(i_w_r_X, i_w_r_Y_1_2, pointSizeTwo, color_reversed, 'filled');
-    plot(fitX, fitData(i_w_r_X, i_w_r_Y_1_1, options, fitX, @probabilityCorrect_whole_one), color_correct); 
-    plot(fitX, fitData(i_w_r_X, i_w_r_Y_1_2, options, fitX, @probabilityCorrect_whole_one_r), color_reversed);
+    %plot(fitX, fitData(i_w_r_X, i_w_r_Y_1_1, options, fitX, @probabilityCorrect_whole_one), color_correct); 
+    %plot(fitX, fitData(i_w_r_X, i_w_r_Y_1_2, options, fitX, @probabilityCorrect_whole_one_r), color_reversed);
+    plot(fitX, genYpoints(fitX, fitVars_indistinct, @probabilityCorrect_whole_one), color_correct);
+    plot(fitX, genYpoints(fitX, fitVars_indistinct, @probabilityCorrect_whole_one_r), color_reversed);
     title('I-W-R-G');
     xlim([xMin xMax]);
     ylim([yMin yMax]);
@@ -245,8 +280,10 @@ if plot_i_w_r
     subplot(4,6,17);
     scatter(i_w_r_X, i_w_r_Y_both, pointSizeOne, color_correct, 'filled'); hold on;
     scatter(i_w_r_X, i_w_r_Y_none, pointSizeTwo, color_reversed, 'filled');
-    plot(fitX, fitData(i_w_r_X, i_w_r_Y_both, options, fitX, @probabilityCorrect_whole_both), color_correct); 
-    plot(fitX, fitData(i_w_r_X, i_w_r_Y_none, options, fitX, @probabilityCorrect_whole_both_r), color_reversed); 
+    %plot(fitX, fitData(i_w_r_X, i_w_r_Y_both, options, fitX, @probabilityCorrect_whole_both), color_correct); 
+    %plot(fitX, fitData(i_w_r_X, i_w_r_Y_none, options, fitX, @probabilityCorrect_whole_both_r), color_reversed); 
+    plot(fitX, genYpoints(fitX, fitVars_indistinct, @probabilityCorrect_whole_both), color_correct);
+    plot(fitX, genYpoints(fitX, fitVars_indistinct, @probabilityCorrect_whole_both_r), color_reversed);
     title('I-W-R-G');
     xlim([xMin xMax]);
     ylim([yMin yMax]);
@@ -254,8 +291,10 @@ if plot_i_w_r
     subplot(4,6,18);
     scatter(i_w_r_X, i_w_r_Y_2_2, pointSizeOne, color_correct, 'filled'); hold on;
     scatter(i_w_r_X, i_w_r_Y_2_1, pointSizeTwo, color_reversed, 'filled');
-    plot(fitX, fitData(i_w_r_X, i_w_r_Y_2_2, options, fitX, @probabilityCorrect_whole_one), color_correct); 
-    plot(fitX, fitData(i_w_r_X, i_w_r_Y_2_1, options, fitX, @probabilityCorrect_whole_one_r), color_reversed);
+    %plot(fitX, fitData(i_w_r_X, i_w_r_Y_2_2, options, fitX, @probabilityCorrect_whole_one), color_correct); 
+    %plot(fitX, fitData(i_w_r_X, i_w_r_Y_2_1, options, fitX, @probabilityCorrect_whole_one_r), color_reversed);
+    plot(fitX, genYpoints(fitX, fitVars_indistinct, @probabilityCorrect_whole_one), color_correct);
+    plot(fitX, genYpoints(fitX, fitVars_indistinct, @probabilityCorrect_whole_one_r), color_reversed);
     title('I-W-R-G');
     xlim([xMin xMax]);
     ylim([yMin yMax]);
@@ -265,8 +304,10 @@ if plot_i_w_g
     subplot(4,6,22);
     scatter(i_w_g_X, i_w_g_Y_1_1, pointSizeOne, color_correct, 'filled'); hold on;
     scatter(i_w_g_X, i_w_g_Y_1_2, pointSizeTwo, color_reversed, 'filled');
-    plot(fitX, fitData(i_w_g_X, i_w_g_Y_1_1, options, fitX, @probabilityCorrect_whole_one), color_correct); 
-    plot(fitX, fitData(i_w_g_X, i_w_g_Y_1_2, options, fitX, @probabilityCorrect_whole_one_r), color_reversed);
+    %plot(fitX, fitData(i_w_g_X, i_w_g_Y_1_1, options, fitX, @probabilityCorrect_whole_one), color_correct); 
+    %plot(fitX, fitData(i_w_g_X, i_w_g_Y_1_2, options, fitX, @probabilityCorrect_whole_one_r), color_reversed);
+    plot(fitX, genYpoints(fitX, fitVars_indistinct, @probabilityCorrect_whole_one), color_correct);
+    plot(fitX, genYpoints(fitX, fitVars_indistinct, @probabilityCorrect_whole_one_r), color_reversed);
     title('I-W-G-R');
     xlim([xMin xMax]);
     ylim([yMin yMax]);
@@ -274,8 +315,10 @@ if plot_i_w_g
     subplot(4,6,23);
     scatter(i_w_g_X, i_w_g_Y_both, pointSizeOne, color_correct, 'filled'); hold on;
     scatter(i_w_g_X, i_w_g_Y_none, pointSizeTwo, color_reversed, 'filled');
-    plot(fitX, fitData(i_w_g_X, i_w_g_Y_both, options, fitX, @probabilityCorrect_whole_both), color_correct); 
-    plot(fitX, fitData(i_w_g_X, i_w_g_Y_none, options, fitX, @probabilityCorrect_whole_both_r), color_reversed); 
+    %plot(fitX, fitData(i_w_g_X, i_w_g_Y_both, options, fitX, @probabilityCorrect_whole_both), color_correct); 
+    %plot(fitX, fitData(i_w_g_X, i_w_g_Y_none, options, fitX, @probabilityCorrect_whole_both_r), color_reversed); 
+    plot(fitX, genYpoints(fitX, fitVars_indistinct, @probabilityCorrect_whole_both), color_correct);
+    plot(fitX, genYpoints(fitX, fitVars_indistinct, @probabilityCorrect_whole_both_r), color_reversed);
     title('I-W-G-R');
     xlim([xMin xMax]);
     ylim([yMin yMax]);
@@ -283,12 +326,17 @@ if plot_i_w_g
     subplot(4,6,24);
     scatter(i_w_g_X, i_w_g_Y_2_2, pointSizeOne, color_correct, 'filled'); hold on;
     scatter(i_w_g_X, i_w_g_Y_2_1, pointSizeTwo, color_reversed, 'filled');
-    plot(fitX, fitData(i_w_g_X, i_w_g_Y_2_2, options, fitX, @probabilityCorrect_whole_one), color_correct); 
-    plot(fitX, fitData(i_w_g_X, i_w_g_Y_2_1, options, fitX, @probabilityCorrect_whole_one_r), color_reversed);
+    %plot(fitX, fitData(i_w_g_X, i_w_g_Y_2_2, options, fitX, @probabilityCorrect_whole_one), color_correct); 
+    %plot(fitX, fitData(i_w_g_X, i_w_g_Y_2_1, options, fitX, @probabilityCorrect_whole_one_r), color_reversed);
+    plot(fitX, genYpoints(fitX, fitVars_indistinct, @probabilityCorrect_whole_one), color_correct);
+    plot(fitX, genYpoints(fitX, fitVars_indistinct, @probabilityCorrect_whole_one_r), color_reversed);
     title('I-W-G-R');
     xlim([xMin xMax]);
     ylim([yMin yMax]);
 end
+
+disp(fitVars_distinct);
+disp(fitVars_indistinct);
 
 function [X, Y_1_1, Y_1_2, Y_2_2, Y_2_1, Y_both, Y_none] = countResults(testNumber, testType)
 load(strcat('data/', testNumber, '_', testType), 'results');
@@ -370,6 +418,54 @@ for i = 1:size(expKeys, 2)
     end
 end
 
+return
+end
+
+function fitvars = fitData_all(options, s_r_x, s_r_y, s_g_x, s_g_y, p_r_x, p_r_y, p_r_rev, p_g_x, p_g_y, p_g_rev, w_r_x, w_r_both, w_r_none, w_r_single_r, w_r_single_r_rev, w_r_single_g, w_r_single_g_rev, w_g_x, w_g_both, w_g_none, w_g_single_r, w_g_single_r_rev, w_g_single_g, w_g_single_g_rev)
+    fitVariables = rand(3,1);
+    fitVariables(1, 1) = 150.0; %k
+    fitVariables(2, 1) = 0.05;  %e0
+    fitVariables(3, 1) = 0.0;   %lapse
+    fun = @(x)getR2_all(x, s_r_x, s_r_y, s_g_x, s_g_y, p_r_x, p_r_y, p_r_rev, p_g_x, p_g_y, p_g_rev, w_r_x, w_r_both, w_r_none, w_r_single_r, w_r_single_r_rev, w_r_single_g, w_r_single_g_rev, w_g_x, w_g_both, w_g_none, w_g_single_r, w_g_single_r_rev, w_g_single_g, w_g_single_g_rev);
+    fitvars = fminsearch(fun,fitVariables, options);
+    return
+end
+
+function R2_all = getR2_all(vars, s_r_x, s_r_y, s_g_x, s_g_y, p_r_x, p_r_y, p_r_rev, p_g_x, p_g_y, p_g_rev, w_r_x, w_r_both, w_r_none, w_r_single_r, w_r_single_r_rev, w_r_single_g, w_r_single_g_rev, w_g_x, w_g_both, w_g_none, w_g_single_r, w_g_single_r_rev, w_g_single_g, w_g_single_g_rev)
+R2_s_r = getR2(vars, s_r_x, s_r_y, @probabilityCorrect_single);
+R2_s_g = getR2(vars, s_g_x, s_g_y, @probabilityCorrect_single);
+R2_p_r = getR2(vars, p_r_x, p_r_y, @probabilityCorrect_partial);
+R2_p_r_rev = getR2(vars, p_r_x, p_r_rev, @probabilityCorrect_partial_r);
+R2_p_g = getR2(vars, p_g_x, p_g_y, @probabilityCorrect_partial);
+R2_p_g_rev = getR2(vars, p_g_x, p_g_rev, @probabilityCorrect_partial_r);
+R2_w_r_both = getR2(vars, w_r_x, w_r_both, @probabilityCorrect_whole_both);
+R2_w_r_both_r = getR2(vars, w_r_x, w_r_none, @probabilityCorrect_whole_both_r);
+R2_w_r_single_r = getR2(vars, w_r_x, w_r_single_r, @probabilityCorrect_whole_one);
+R2_w_r_single_r_rev = getR2(vars, w_r_x, w_r_single_r_rev, @probabilityCorrect_whole_one_r);
+R2_w_r_single_g = getR2(vars, w_r_x, w_r_single_g, @probabilityCorrect_whole_one);
+R2_w_r_single_g_rev = getR2(vars, w_r_x, w_r_single_g_rev, @probabilityCorrect_whole_one_r);
+R2_w_g_both = getR2(vars, w_g_x, w_g_both, @probabilityCorrect_whole_both);
+R2_w_g_both_r = getR2(vars, w_g_x, w_g_none, @probabilityCorrect_whole_both_r);
+R2_w_g_single_r = getR2(vars, w_g_x, w_g_single_r, @probabilityCorrect_whole_one);
+R2_w_g_single_r_rev = getR2(vars, w_g_x, w_g_single_r_rev, @probabilityCorrect_whole_one_r);
+R2_w_g_single_g = getR2(vars, w_g_x, w_g_single_g, @probabilityCorrect_whole_one);
+R2_w_g_single_g_rev = getR2(vars, w_g_x, w_g_single_g_rev, @probabilityCorrect_whole_one_r);
+
+R2_all = R2_s_r + R2_s_g + R2_p_r + R2_p_r_rev + R2_p_g + R2_p_g_rev;
+R2_all = R2_all + R2_w_r_both + R2_w_r_both_r + R2_w_r_single_r + R2_w_r_single_r_rev + R2_w_r_single_g + R2_w_r_single_g_rev;
+R2_all = R2_all + R2_w_g_both + R2_w_g_both_r + R2_w_g_single_r + R2_w_g_single_r_rev + R2_w_g_single_g + R2_w_g_single_g_rev;
+return
+end
+
+function predicted = genYpoints(fitX, vars, probabilityFunction)
+k = vars(1);
+e0 = vars(2);
+lapse = vars(3);
+
+predicted = zeros(1, size(fitX, 2));
+for i = 1:size(fitX, 2)
+    predicted(i) = probabilityFunction(@logistic, [fitX(i), e0, k], 0.2, lapse);
+end
 return
 end
 
