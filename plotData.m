@@ -375,13 +375,12 @@ end
 
 function predicted = fitData(xdata, ydata, options, fitX, probabilityFunction)
     global maxIter;
-    x0 = rand(3,1);
-    x0(1, 1) = 150.0;
-    x0(2, 1) = 0.05;
-    x0(3, 1) = 0.0;
+    fitVariables = rand(3,1);
+    fitVariables(1, 1) = 150.0; %k
+    fitVariables(2, 1) = 0.05;  %e0
+    fitVariables(3, 1) = 0.0;   %lapse
     fun = @(x)getR2(x, xdata, ydata, probabilityFunction);
-    vars = fminsearch(fun,x0, options);
-    %vars = fitFunction(maxIter, fun);
+    vars = fminsearch(fun,fitVariables, options);
     
     k = vars(1);
     e0 = vars(2);
@@ -394,7 +393,7 @@ function predicted = fitData(xdata, ydata, options, fitX, probabilityFunction)
 
     predicted = zeros(1, size(fitX, 2));
     for i = 1:size(fitX, 2)
-        predicted(i) = probabilityFunction(fitX(i), e0, 1.0, k, 0.2, lapse);
+        predicted(i) = probabilityFunction(@logistic, [fitX(i), e0, k], 0.2, lapse);
     end
 end
 
@@ -411,185 +410,146 @@ function R2 = getR2(vars, xdata, ydata, fun)
     SStot = 0.0;
     SSres = 0.0;
     for i = 1:size(xdata, 2)
-        f = fun(xdata(i), e0, 1.0, k, 0.2, lapse);
+        f = fun(@logistic, [xdata(i), e0, k], 0.2, lapse);
         SStot = SStot + (ydata(i) - m).^2;
         SSres = SSres + (ydata(i) - f).^2;
     end
     R2 = -(1.0 - SSres/SStot);
 end
 
-function p = probabilityCorrect_single(e, e0, L, k, guess, lapse)
-p0 = logistic(e, e0, L, k);
-delta = 1.0 - p0;
-p = p0 + delta * guess;
+function p = probabilityCorrect_single(probFun, fitVariables, guess, lapse)
+p_l1 = probFun(fitVariables);
+
+case1 = p_l1;
+case2 = (1.0 - p_l1) * 0.2;
+
+p = case1 + case2;
 p = p * (1.0 - lapse) + lapse * guess;
 return
 end
 
-function p = probabilityCorrect_partial(e, e0, L, k, guess, lapse)
-p_l1 = logistic(e, e0, L, k) + (1.0 - logistic(e, e0, L, k)) * guess;
-p_l2 = logistic(e, e0, L, k) + (1.0 - logistic(e, e0, L, k)) * guess;
-p_c1 = logistic(e, e0, L, k);
-p_c2 = logistic(e, e0, L, k);
-p_c12 = (1.0 - (1.0 - p_c1) * (1.0 - p_c2));
-p_c = p_c12 + (1.0 - p_c12) * 0.5;
-p = p_l1 * p_c;
+function p = probabilityCorrect_partial(probFun, fitVariables, guess, lapse)
+p_l1 = probFun(fitVariables);
+p_l2 = probFun(fitVariables);
+p_c = probFun(fitVariables);
+
+case1 = p_l1 * p_l2 * p_c;
+case2 = p_l1 * p_l2 * (1.0 - p_c)         * 0.5;                %guess color
+case3 = p_l1 * (1.0 - p_l2) * p_c;
+case4 = p_l1 * (1.0 - p_l2) * (1.0 - p_c) * 0.5;                %guess color
+case5 = (1.0 - p_l1) * p_l2 * p_c         * 0.25;               %guess letter out of 4
+case6 = (1.0 - p_l1) * p_l2 * (1.0 - p_c) * 0.5 * 0.25;         %guess color, letter out of 4
+case7 = (1.0 - p_l1) * (1.0 - p_l2) * p_c * 0.2;                %guess letter out of 5
+case8 = (1.0 - p_l1) * (1.0 - p_l2) * (1.0 - p_c) * 0.5 * 0.2;  %guess color, letter out of 5
+
+p = case1 + case2 + case3 + case4 + case5 + case6 + case7 + case8;
 p = p * (1.0 - lapse) + lapse * guess;
 return
 end
 
-function p = probabilityCorrect_partial_r(e, e0, L, k, guess, lapse)
-p_l1 = logistic(e, e0, L, k) + (1.0 - logistic(e, e0, L, k)) * guess;
-p_l2 = logistic(e, e0, L, k) + (1.0 - logistic(e, e0, L, k)) * guess;
-p_c1 = logistic(e, e0, L, k);
-p_c2 = logistic(e, e0, L, k);
-p_c12 = (1.0 - (1.0 - p_c1) * (1.0 - p_c2));
-p_c = p_c12 + (1.0 - p_c12) * 0.5;
-p = p_l2 * (1.0 - p_c);
+function p = probabilityCorrect_partial_r(probFun, fitVariables, guess, lapse)
+p_l1 = probFun(fitVariables);
+p_l2 = probFun(fitVariables);
+p_c = probFun(fitVariables);
+
+case1 = p_l1 * p_l2 * p_c                 * 0;
+case2 = p_l1 * p_l2 * (1.0 - p_c)         * 0.5;                %guess color
+case3 = p_l1 * (1.0 - p_l2) * p_c         * 0;
+case4 = p_l1 * (1.0 - p_l2) * (1.0 - p_c) * 0.5 * 0.25;         %guess color, letter out of 4
+case5 = (1.0 - p_l1) * p_l2 * p_c         * 0;
+case6 = (1.0 - p_l1) * p_l2 * (1.0 - p_c) * 0.5;                %guess color
+case7 = (1.0 - p_l1) * (1.0 - p_l2) * p_c * 0;
+case8 = (1.0 - p_l1) * (1.0 - p_l2) * (1.0 - p_c) * 0.5 * 0.2;  %guess color, letter out of 5
+
+p = case1 + case2 + case3 + case4 + case5 + case6 + case7 + case8;
 p = p * (1.0 - lapse) + lapse * guess;
 return
 end
 
-function p = probabilityCorrect_whole_both(e, e0, L, k, guess, lapse)
-p_l1 = logistic(e, e0, L, k) + (1.0 - logistic(e, e0, L, k)) * guess;
-p_l2 = logistic(e, e0, L, k) + (1.0 - logistic(e, e0, L, k)) * guess;
-p_c1 = logistic(e, e0, L, k);
-p_c2 = logistic(e, e0, L, k);
-p_c12 = (1.0 - (1.0 - p_c1) * (1.0 - p_c2));
-p_c = p_c12 + (1.0 - p_c12) * 0.5;
-p = p_l1 * p_l2* p_c;
+function p = probabilityCorrect_whole_both(probFun, fitVariables, guess, lapse)
+p_l1 = probFun(fitVariables);
+p_l2 = probFun(fitVariables);
+p_c = probFun(fitVariables);
+
+case1 = p_l1 * p_l2 * p_c;
+case2 = p_l1 * p_l2 * (1.0 - p_c)         * 0.5;                %guess color
+case3 = p_l1 * (1.0 - p_l2) * p_c         * 0.25;               %guess letter out of 4
+case4 = p_l1 * (1.0 - p_l2) * (1.0 - p_c) * 0.5 * 0.25;         %guess color, letter out of 4
+case5 = (1.0 - p_l1) * p_l2 * p_c         * 0.25;               %guess letter out of 4
+case6 = (1.0 - p_l1) * p_l2 * (1.0 - p_c) * 0.5 * 0.25;         %guess color, letter out of 4
+case7 = (1.0 - p_l1) * (1.0 - p_l2) * p_c * 0.2 * 0.25;         %guess letter out of 5, letter out of 4
+case8 = (1.0 - p_l1) * (1.0 - p_l2) * (1.0 - p_c) * 0.5 * 0.2 * 0.25;  %guess color, letter out of 5, letter out of 4
+
+p = case1 + case2 + case3 + case4 + case5 + case6 + case7 + case8;
+
 p = p * (1.0 - lapse) + lapse * guess;
 return
 end
 
-function p = probabilityCorrect_whole_both_r(e, e0, L, k, guess, lapse)
-p_l1 = logistic(e, e0, L, k) + (1.0 - logistic(e, e0, L, k)) * guess;
-p_l2 = logistic(e, e0, L, k) + (1.0 - logistic(e, e0, L, k)) * guess;
-p_c1 = logistic(e, e0, L, k);
-p_c2 = logistic(e, e0, L, k);
-p_c12 = (1.0 - (1.0 - p_c1) * (1.0 - p_c2));
-p_c = p_c12 + (1.0 - p_c12) * 0.5;
-p = p_l1 * p_l2* (1.0 - p_c);
+function p = probabilityCorrect_whole_both_r(probFun, fitVariables, guess, lapse)
+p_l1 = probFun(fitVariables);
+p_l2 = probFun(fitVariables);
+p_c = probFun(fitVariables);
+
+case1 = p_l1 * p_l2 * p_c                 * 0;
+case2 = p_l1 * p_l2 * (1.0 - p_c)         * 0.5;                %guess color
+case3 = p_l1 * (1.0 - p_l2) * p_c         * 0;
+case4 = p_l1 * (1.0 - p_l2) * (1.0 - p_c) * 0.5 * 0.25;         %guess color, letter out of 4
+case5 = (1.0 - p_l1) * p_l2 * p_c         * 0;
+case6 = (1.0 - p_l1) * p_l2 * (1.0 - p_c) * 0.5 * 0.25;         %guess color, letter out of 4
+case7 = (1.0 - p_l1) * (1.0 - p_l2) * p_c * 0;
+case8 = (1.0 - p_l1) * (1.0 - p_l2) * (1.0 - p_c) * 0.5 * 0.2 * 0.25;  %guess color, letter out of 5, letter out of 4
+
+p = case1 + case2 + case3 + case4 + case5 + case6 + case7 + case8;
 p = p * (1.0 - lapse) + lapse * guess;
 return
 end
 
-function p = probabilityCorrect_whole_one(e, e0, L, k, guess, lapse)
-p_l1 = logistic(e, e0, L, k) + (1.0 - logistic(e, e0, L, k)) * guess;
-p_l2 = logistic(e, e0, L, k) + (1.0 - logistic(e, e0, L, k)) * guess;
-p_c1 = logistic(e, e0, L, k);
-p_c2 = logistic(e, e0, L, k);
-p_c12 = (1.0 - (1.0 - p_c1) * (1.0 - p_c2));
-p_c = p_c12 + (1.0 - p_c12) * 0.5;
-p = p_l1 * (1.0-p_l2) * p_c;
+function p = probabilityCorrect_whole_one(probFun, fitVariables, guess, lapse)
+p_l1 = probFun(fitVariables);
+p_l2 = probFun(fitVariables);
+p_c = probFun(fitVariables);
+
+case1 = p_l1 * p_l2 * p_c                 * 0;
+case2 = p_l1 * p_l2 * (1.0 - p_c)         * 0;
+case3 = p_l1 * (1.0 - p_l2) * p_c         * 0.75;               %miss other letter
+case4 = p_l1 * (1.0 - p_l2) * (1.0 - p_c) * 0.5 * 0.75;         %miss color, miss other letter
+case5 = (1.0 - p_l1) * p_l2 * p_c         * 0;
+case6 = (1.0 - p_l1) * p_l2 * (1.0 - p_c) * 0;
+case7 = (1.0 - p_l1) * (1.0 - p_l2) * p_c * 0.25 * 0.8;         %guess letter out of 4, miss letter out of 5 ORDER MATTERS?
+case8 = (1.0 - p_l1) * (1.0 - p_l2) * (1.0 - p_c) * 0.5 * 0.25 * 0.8;  %miss color, guess letter out of 4, miss letter out of 5
+
+p = case1 + case2 + case3 + case4 + case5 + case6 + case7 + case8;
+
 p = p * (1.0 - lapse) + lapse * guess;
 return
 end
 
-function p = probabilityCorrect_whole_one_r(e, e0, L, k, guess, lapse)
-p_l1 = logistic(e, e0, L, k) + (1.0 - logistic(e, e0, L, k)) * guess;
-p_l2 = logistic(e, e0, L, k) + (1.0 - logistic(e, e0, L, k)) * guess;
-p_c1 = logistic(e, e0, L, k);
-p_c2 = logistic(e, e0, L, k);
-p_c12 = (1.0 - (1.0 - p_c1) * (1.0 - p_c2));
-p_c = p_c12 + (1.0 - p_c12) * 0.5;
-p = p_l2 * (1.0 - p_l1) * (1.0 - p_c);
+function p = probabilityCorrect_whole_one_r(probFun, fitVariables, guess, lapse)
+p_l1 = probFun(fitVariables);
+p_l2 = probFun(fitVariables);
+p_c = probFun(fitVariables);
+
+case1 = p_l1 * p_l2 * p_c                 * 0;
+case2 = p_l1 * p_l2 * (1.0 - p_c)         * 0;
+case3 = p_l1 * (1.0 - p_l2) * p_c         * 0;
+case4 = p_l1 * (1.0 - p_l2) * (1.0 - p_c) * 0;
+case5 = (1.0 - p_l1) * p_l2 * p_c         * 0;
+case6 = (1.0 - p_l1) * p_l2 * (1.0 - p_c) * 0.5 * 0.75;         %miss color, miss letter out of 4
+case7 = (1.0 - p_l1) * (1.0 - p_l2) * p_c * 0;
+case8 = (1.0 - p_l1) * (1.0 - p_l2) * (1.0 - p_c) * 0.5 * 0.25 * 0.8;  %miss color, guess letter out of 4, miss letter out of 5
+
+p = case1 + case2 + case3 + case4 + case5 + case6 + case7 + case8;
+
 p = p * (1.0 - lapse) + lapse * guess;
 return
 end
 
-function p = logistic(e, e0, L, k)
-p = L/(1.0 + exp(-k*(e-e0)));
+function p = logistic(fitVariables)
+e = fitVariables(1);
+e0 = fitVariables(2);
+k = fitVariables(3);
+p = 1.0/(1.0 + exp(-k*(e-e0)));
 return
 end
 
-function vars = fitFunction(maxIter, R2Fun)
-    k0 = rand(1);
-    e0 = rand(1);
-    l0 = rand(1);
-    r0 = realmax; 
-
-    kN = k0;
-    eN = e0;
-    lN = l0;
-    rN = r0; 
-    
-    for i = 1:maxIter
-        %%% k %%%
-        if rand(1) < 0.5
-            kN = increaseDecrease(k0, realmin, realmax);
-        else
-            kN = multDiv(k0, realmin, realmax);
-        end
-        %%% e %%% 
-        if rand(1) < 0.5
-            eN = increaseDecrease(e0, realmin, realmax);
-        else
-            eN = multDiv(e0, 0.0, realmax);
-        end
-        
-        %%% lapse %%% 
-        if rand(1) < 0.5
-            lN = increaseDecrease(l0, 0.0, 1.0);
-        else
-            lN = multDiv(l0, 0.0, 1.0);
-        end
-        rN = R2Fun([kN eN lN]);
-        if rN < r0
-            %fprintf('k=%d, e0=%d, l=%d, R2 = %d\n', kN, eN, lN, rN);
-            k0 = kN;
-            e0 = eN;
-            l0 = lN;
-            r0 = rN;
-        end
-    end
-    vars = [k0 e0 l0];
-    return
-end
-
-function newVal = increaseDecrease(val, min, max)
-    newVal = val;
-    inc = rand(1).^(1.0/rand(1));
-    if rand(1) < 0.5
-        if rand(1) < 0.5
-            newVal = newVal + inc;
-        else
-            newVal = newVal - inc;
-        end
-    else
-        if rand(1) < 0.5
-            newVal = newVal + rand(1);
-        else
-            newVal = newVal - rand(1);
-        end
-    end
-    if newVal < min | newVal > max
-        newVal = rand(1);
-    end
-    return
-end
-
-function newVal = multDiv(val, min, max)
-    newVal = val;
-    inc = rand(1);
-    if rand(1 < 0.5)
-        if rand(1) < 0.5
-            newVal = newVal * (1.0 + inc);
-        else
-            newVal = newVal * (1.0 - inc);
-        end
-        if newVal < min | newVal > max
-            newVal = val;
-        end
-    else
-        if rand(1) < 0.5
-            newVal = newVal .^ (1.0 + inc);
-        else
-            newVal = newVal .^ (1.0 - inc);
-        end
-        if newVal < min | newVal > max
-            newVal = rand(1);
-        end
-    end
-    return
-end
