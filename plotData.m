@@ -48,6 +48,7 @@ plot_d_p_r = 1;
 plot_d_p_g = 1;
 plot_d_w_r = 1;
 plot_d_w_g = 1;
+plot_d_c   = 1;
 
 plot_i_s_r = 1;
 plot_i_s_g = 1;
@@ -55,6 +56,7 @@ plot_i_p_r = 1;
 plot_i_p_g = 1;
 plot_i_w_r = 1;
 plot_i_w_g = 1;
+plot_i_c   = 1;
 
 if training
     if redFirst
@@ -109,6 +111,14 @@ if plot_d_s_r
     plot(fitX, genYpoints(fitX, fitVars_distinct, @probabilityCorrect_single), color_correct);
     %title('D-S-R');
     title('Red');
+    xlim([xMin xMax]);
+    ylim([yMin yMax]);
+end
+
+if plot_d_c
+    subplot(4,6,5);
+    plot(fitX, genYpoints(fitX, fitVars_distinct, @probabilityCorrect_color));
+    title('Distinct');
     xlim([xMin xMax]);
     ylim([yMin yMax]);
 end
@@ -227,8 +237,17 @@ if plot_i_s_r
     %plot(fitX, fitData(i_s_r_X, i_s_r_Y_1_1, options, fitX, @probabilityCorrect_single), color_correct);
     plot(fitX, genYpoints(fitX, fitVars_indistinct, @probabilityCorrect_single), color_correct);
     %title('I-S-R');
-    title('Red')
+    title('Red');
     ylabel('Single');
+    xlim([xMin xMax]);
+    ylim([yMin yMax]);
+end
+
+if plot_i_c
+    subplot(4,6,2);
+    plot(fitX, genYpoints(fitX, fitVars_indistinct, @probabilityCorrect_color));
+    %title('I-S-R');
+    title('Indistinct');
     xlim([xMin xMax]);
     ylim([yMin yMax]);
 end
@@ -239,7 +258,7 @@ if plot_i_s_g
     %plot(fitX, fitData(i_s_g_X, i_s_g_Y_1_1, options, fitX, @probabilityCorrect_single), color_correct);
     plot(fitX, genYpoints(fitX, fitVars_indistinct, @probabilityCorrect_single), color_correct);
     %title('I-S-G');
-    title('Green')
+    title('Green');
     xlim([xMin xMax]);
     ylim([yMin yMax]);
 end
@@ -343,6 +362,8 @@ if plot_i_w_g
     ylim([yMin yMax]);
 end
 
+fprintf('Distinct   k=%d, e0=%d, lapse=%d\n', fitVars_distinct(1), var2convert(fitVars_distinct(2)), var3convert(fitVars_distinct(3)));
+fprintf('Indistinct k=%d, e0=%d, lapse=%d\n', fitVars_indistinct(1), var2convert(fitVars_indistinct(2)), var3convert(fitVars_indistinct(3)));
 disp(fitVars_distinct);
 disp(fitVars_indistinct);
 
@@ -431,11 +452,11 @@ end
 
 function fitvars = fitData_all(options, s_r_x, s_r_y, s_g_x, s_g_y, p_r_x, p_r_y, p_r_rev, p_g_x, p_g_y, p_g_rev, w_r_x, w_r_both, w_r_none, w_r_single_r, w_r_single_r_rev, w_r_single_g, w_r_single_g_rev, w_g_x, w_g_both, w_g_none, w_g_single_r, w_g_single_r_rev, w_g_single_g, w_g_single_g_rev)
     fitVariables = rand(3,1);
-    fitVariables(1, 1) = 150.0; %k
-    fitVariables(2, 1) = 0.05;  %e0
-    fitVariables(3, 1) = 0.0;   %lapse
+    %fitVariables(1, 1) = 10.0; %k
+    %fitVariables(2, 1) = 0.05;  %e0
+    %fitVariables(3, 1) = 0.0;   %lapse
     fun = @(x)getR2_all(x, s_r_x, s_r_y, s_g_x, s_g_y, p_r_x, p_r_y, p_r_rev, p_g_x, p_g_y, p_g_rev, w_r_x, w_r_both, w_r_none, w_r_single_r, w_r_single_r_rev, w_r_single_g, w_r_single_g_rev, w_g_x, w_g_both, w_g_none, w_g_single_r, w_g_single_r_rev, w_g_single_g, w_g_single_g_rev);
-    fitvars = fminsearch(fun,fitVariables, options);
+    fitvars = fminunc(fun,fitVariables, options);
     return
 end
 
@@ -465,18 +486,6 @@ R2_all = R2_all + R2_w_g_both + R2_w_g_both_r + R2_w_g_single_r + R2_w_g_single_
 return
 end
 
-function predicted = genYpoints(fitX, vars, probabilityFunction)
-k = vars(1);
-e0 = vars(2);
-lapse = vars(3);
-
-predicted = zeros(1, size(fitX, 2));
-for i = 1:size(fitX, 2)
-    predicted(i) = probabilityFunction(@logistic, [fitX(i), e0, k], 0.2, lapse);
-end
-return
-end
-
 function predicted = fitData(xdata, ydata, options, fitX, probabilityFunction)
     global maxIter;
     fitVariables = rand(3,1);
@@ -501,14 +510,34 @@ function predicted = fitData(xdata, ydata, options, fitX, probabilityFunction)
     end
 end
 
+function result = var2convert(v)
+%result = v;
+result = exp(v)/(exp(v) + 10000.0);
+return;
+end
+
+function result = var3convert(v)
+%result = v;
+result = exp(v)/(exp(v) + 10000.0);
+return;
+end
+
+function predicted = genYpoints(fitX, vars, probabilityFunction)
+k = vars(1);
+e0 = var2convert(vars(2));
+lapse = var3convert(vars(3));
+
+predicted = zeros(1, size(fitX, 2));
+for i = 1:size(fitX, 2)
+    predicted(i) = probabilityFunction(@logistic, [fitX(i), e0, k], 0.2, lapse);
+end
+return
+end
+
 function R2 = getR2(vars, xdata, ydata, fun)
     k = vars(1);
-    e0 = vars(2);
-    %if(e0 < 0) e0 = 0; end
-    lapse = vars(3);
-    if (lapse < 0.0) lapse = 0.0; end
-    if (lapse > 1.0) lapse = 1.0; end
-    lapse = 0.0; %LAPSE OFF
+    e0 = var2convert(vars(2));
+    lapse = var3convert(vars(3));
     m = mean(ydata);
     
     SStot = 0.0;
@@ -519,6 +548,17 @@ function R2 = getR2(vars, xdata, ydata, fun)
         SSres = SSres + (ydata(i) - f).^2;
     end
     R2 = -(1.0 - SSres/SStot);
+end
+
+function p = probabilityCorrect_color(probFun, fitVariables, guess, lapse)
+p_l1 = probFun(fitVariables);
+
+case1 = p_l1;
+case2 = (1.0 - p_l1) * 0.5;
+
+p = case1; %+ case2;
+%p = p * (1.0 - lapse) + lapse * guess;
+return
 end
 
 function p = probabilityCorrect_single(probFun, fitVariables, guess, lapse)
